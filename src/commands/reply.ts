@@ -1,5 +1,5 @@
 import { Command } from 'discord-akairo';
-import { MessageEmbed, TextChannel, Message } from 'discord.js';
+import { MessageEmbed, Message } from 'discord.js';
 import Thread from '../schemas/Thread';
 
 export default class Reply extends Command {
