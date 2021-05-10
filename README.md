@@ -1,8 +1,18 @@
 <br />
 <p align="center">
-  <img align="center" width="300" height="300" style="width: 100%; height: auto;" src="static/header.png">
-
+  <img align="center" style="width: 100%; height: auto;" src="static/header.png">
   <p align="center">
+
+  <div align="center">
+    <a href="https://discord.gg/thinkfiveable">
+      <img src="https://img.shields.io/discord/564151499685625856.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2 ">
+    </a>
+    <a href="https://github.com/ThinkFiveable/cram-support-bot/actions/workflows/lint.yml">
+      <img src="https://github.com/ThinkFiveable/cram-support-bot/actions/workflows/lint.yml/badge.svg">
+    </a>
+  </div>
+
+  <div align="center">
     Modmail-based support ticket bot.
     <br />
     <a href="https://github.com/thinkfiveable/cram-support-bot/issues">Report Bug</a>
@@ -10,7 +20,8 @@
     <a href="https://github.com/thinkfiveable/cram-support-bot/issues">Request Feature</a>
     ·
     <a href="https://github.com/thinkfiveable/cram-support-bot/pulls">Send a Pull Request</a>
-  </p>
+    </p>
+  </div>
 </p>
 
 # 📝 What is this?
@@ -21,13 +32,13 @@ This repository houses the code for `Fiveable Cram Support Bot` used in the [Fiv
 You dm the bot a message, which will start the question process. If a user does not respond quick enough or provides invalid data, the ticket creation is cancelled.
 
 <p align="center">
-  <img align="center" width="300" height="300" style="width: 100%; height: auto;" src="static/vid_1.gif">
+  <img align="center" style="width: 100%; height: auto;" src="static/vid_1.gif">
 </p>
 
 # 🤔 What does it look like from the moderators end?
 
 <p align="center">
-  <img align="center" width="300" height="300" style="width: 100%; height: auto;" src="static/mod_view.png">
+  <img align="center" style="width: 100%; height: auto;" src="static/mod_view.png">
 </p>
 
 # 📝Commands
