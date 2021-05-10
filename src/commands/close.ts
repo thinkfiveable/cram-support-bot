@@ -13,6 +13,7 @@ export default class Close extends Command {
 				{
 					id: 'channel',
 					type: 'textChannel',
+					default: (m) => m.channel,
 				},
 			],
 			channel: 'guild',
@@ -24,9 +25,8 @@ export default class Close extends Command {
 		});
 	}
 
-	public async exec(msg: Message, { channel }: { channel: TextChannel | undefined }) {
+	public async exec(msg: Message, { thread }: { thread: TextChannel }) {
 		// allow people to run this command in either the ticket channel itself or another one and target the channel
-		const thread = channel ?? msg.channel;
 		const ticket = await Thread.findOne({ thread_id: thread.id });
 
 		if (!ticket) return msg.channel.send(`Cannot locate ticket by channel.`);

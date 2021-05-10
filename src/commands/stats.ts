@@ -20,7 +20,7 @@ export default class Stats extends Command {
 
 	public async exec(msg: Message) {
 		const creator = this.client.users.cache.get(this.client.config.ADMIN_ID);
-		// inspiration from https://github.com/Naval-Base/yuudachi/blob/master/src/bot/commands/util/stats.ts
+		// derived from https://github.com/Naval-Base/yuudachi/blob/master/src/bot/commands/util/stats.ts
 		return msg.channel.send(
 			new MessageEmbed()
 				.setTitle('Statistics about me!')

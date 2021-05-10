@@ -20,21 +20,6 @@ export default class Client extends AkairoClient {
 		});
 
 		this.config = config;
-		// connect to mongo db
-		void mongoose.connect(
-			config.DB_URI,
-			{
-				useNewUrlParser: true,
-				useFindAndModify: false,
-				useUnifiedTopology: true,
-			},
-			(e) => {
-				// eslint-disable-next-line @typescript-eslint/no-base-to-string
-				console.error.bind(`Error connecting to MongoDB Database. ${e}`);
-				process.exitCode = 1;
-			},
-		);
-		this.db = mongoose.connection;
 
 		// boilerplate akairo stuff below
 		this.commandHandler = new CommandHandler(this, {
@@ -60,7 +45,7 @@ export default class Client extends AkairoClient {
 		});
 	}
 
-	private _init() {
+	private async _init() {
 		// boilerplate akairo stuff
 		this.commandHandler.useListenerHandler(this.listenerHandler);
 		this.listenerHandler.setEmitters({
@@ -69,6 +54,21 @@ export default class Client extends AkairoClient {
 		});
 		this.commandHandler.loadAll();
 		this.listenerHandler.loadAll();
+
+		// connect to mongo db
+		await mongoose.connect(
+			this.config.DB_URI,
+			{
+				useNewUrlParser: true,
+				useFindAndModify: false,
+				useUnifiedTopology: true,
+			},
+			(e) => {
+				// eslint-disable-next-line @typescript-eslint/no-base-to-string
+				console.error.bind(`Error connecting to MongoDB Database. ${e}`);
+				process.exitCode = 1;
+			},
+		);
 	}
 
 	public info(str: string) {
@@ -76,7 +76,7 @@ export default class Client extends AkairoClient {
 	}
 
 	public async login(token: string) {
-		this._init();
+		await this._init();
 		console.log('Logging in...');
 		return super.login(token);
 	}

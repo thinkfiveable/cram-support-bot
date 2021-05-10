@@ -1,29 +1,31 @@
 {
   "name": "cram_support",
   "version": "1.0.0",
-  "description": "",
+  "description": "Support bot for cram/account related questions on the Fiveable Discord server",
   "main": "dist/index.js",
   "scripts": {
     "build": "npx rimraf dist/ && tsc",
     "lint": "npx eslint src --ext .js,.ts",
     "lint:fix": "npm run lint -- --fix",
-    "start": "node dist/index.js",
+    "start": "node -r dotenv/config dist/index.js",
     "dev": "npm run build && npm start",
     "deploy": "heroku container:push worker --app=fiveable-cram-support-bot && heroku container:release worker --app=fiveable-cram-support-bot"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "Zaid (Nico)",
+  "license": "MIT",
   "devDependencies": {
     "@commitlint/cli": "^12.0.1",
     "@commitlint/config-angular": "^12.0.1",
     "@types/common-tags": "^1.8.0",
     "@types/mongoose": "^5.10.3",
+    "@types/node-fetch": "^2.5.10",
     "@typescript-eslint/eslint-plugin": "^4.22.0",
     "@typescript-eslint/parser": "^4.22.0",
     "eslint": "^7.24.0",
     "eslint-config-marine": "^7.2.0",
     "eslint-config-prettier": "^6.15.0",
     "eslint-plugin-prettier": "^3.4.0",
+    "husky": "^4.3.8",
     "lint-staged": "^10.5.4",
     "prettier": "^2.2.1",
     "rimraf": "^3.0.2",
@@ -36,6 +38,7 @@
     "dotenv": "^8.2.0",
     "email-validator": "^2.0.4",
     "mongoose": "^5.11.15",
+    "node-fetch": "^2.6.1",
     "tslib": "^1.14.1"
   },
   "prettier": {
@@ -53,6 +56,7 @@
   "husky": {
     "hooks": {
       "pre-commit": "lint-staged",
+      "build": "npm run build",
       "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
     }
   },

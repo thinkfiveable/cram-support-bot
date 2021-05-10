@@ -68,7 +68,7 @@ Please supply the following ENV variables in a `.env` file in the root of the pr
 ## Setup
 You can setup this project manually using the steps below, or using the include docker-compose file by doing `docker compose up -d --build`. There is also an included `heroku.yml` file for deploying to Heroku, which should build with the Dockerfile provided.
 
-```console
+```
 git clone https://github.com/ThinkFiveable/cram-support-bot.git   
 cd cram-support-bot 
 npm install  
@@ -77,7 +77,7 @@ npm run build
 Be sure to fill in the env variables as seen [here](#env-variables)  
 
 To start the bot, run this command:
-```
+```console
 npm run start
 ```
 

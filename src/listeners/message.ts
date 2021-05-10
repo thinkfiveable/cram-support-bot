@@ -1,5 +1,5 @@
 import { Listener } from 'discord-akairo';
-import { Client, MessageEmbed, Message, Util, User, TextChannel } from 'discord.js';
+import { Client, MessageEmbed, Message, Util, User, TextChannel, BufferResolvable } from 'discord.js';
 import Thread from '../schemas/Thread';
 import { stripIndents } from 'common-tags';
 import * as EmailValidator from 'email-validator';
@@ -40,7 +40,7 @@ export default class MessageListener extends Listener {
 					.setColor('RED')
 					.setTitle('Error!')
 					.setDescription(
-						"You have an open ticket, but I cannot find it's respective thread. I am closing this ticket, if you still need help please feel free to open another ticket or DM a staff member!",
+						'You have an open ticket, but I cannot find its respective thread. I am closing this ticket, if you still need help please feel free to open another ticket or DM a staff member!',
 					),
 			);
 			findThread.closed = true;
@@ -48,15 +48,15 @@ export default class MessageListener extends Listener {
 		}
 
 		// send all attachments with the message.
-		const SERIALIZED_ATTACHMENTS = [];
+		const SERIALIZED_ATTACHMENTS: { attachment: BufferResolvable; name: string }[] = [];
 		for (const { attachment, name } of message.attachments.values()) {
 			if (!['jpg', 'jpeg', 'png', 'gif', 'mp4'].some((x) => name?.endsWith(x))) continue;
-			SERIALIZED_ATTACHMENTS.push({ attachment, name: name ?? 'NO_NAME' });
+			SERIALIZED_ATTACHMENTS.push({ attachment: attachment as BufferResolvable, name: name ?? 'NO_NAME' });
 		}
 
 		try {
 			// send users message to their ticket channel
-			await threadChannel.send('+', {
+			await threadChannel.send({
 				embed: new UserEmbed(message.author)
 					.setDescription(message.content)
 					.setFooter(`Message ID: ${message.id}`)
@@ -124,7 +124,7 @@ export default class MessageListener extends Listener {
 			this.client.info(`[Thread] data received from ${m.author.tag} (${m.author.id})`);
 
 			// save ticket to mongodb
-			const NEW_THREAD = new Thread({
+			const newThread = new Thread({
 				author_id: m.author.id,
 				data: {
 					first_name: PROMPT_FIRST_NAME,
@@ -136,41 +136,42 @@ export default class MessageListener extends Listener {
 				},
 			});
 
-			const SAVED_THREAD = await NEW_THREAD.save();
-			this.client.info(`[Thread] created ${SAVED_THREAD._id} for ${m.author.tag} (${m.author.id})`);
+			const savedThread = await newThread.save();
+			this.client.info(`[Thread] created ${savedThread._id} for ${m.author.tag} (${m.author.id})`);
 
 			// create a channel for their ticket
-			await this.client
-				.guild!.channels.create(`support-${m.author.username}-${m.author.discriminator}`, {
+			const channel = await this.client.guild!.channels.create(
+				`support-${m.author.username}-${m.author.discriminator}`,
+				{
 					parent: this.client.modMailCategory!.id,
 					reason: 'New Support Thread.',
 					topic: `Support thread for ${m.author.tag} (${m.author.id})`,
-				})
-				.then(async (channel) => {
-					// sync this channel with the category
-					await channel.lockPermissions();
-					this.client.info(`[Thread] Support Channel created for ${m.author.tag} (${m.author.id})`);
-					// send initial message
-					await channel.send(
-						new MessageEmbed()
-							.setTitle('New Support Thread...')
-							.setColor('#36393E')
-							.setDescription(
-								stripIndents`
-								**First Name:** \`${PROMPT_FIRST_NAME}\`
-								**Last Name:** \`${PROMPT_LAST_NAME}\`
-								**Order ID:** \`${PROMPT_ORDER_ID ?? 'n/a'}\`
-								**Email:** \`${PROMPT_EMAIL}\`
-								**Zip Code:** \`${PROMPT_ZIP_CODE}\`
-								**Issue:** \`${PROMPT_ISSUE}\`
-								`,
-							)
-							.setFooter(`Ticket ID: ${SAVED_THREAD._id}`),
-					);
-					SAVED_THREAD.thread_id = channel.id;
-					// resave ticket with created channel id
-					return SAVED_THREAD.save();
-				});
+				},
+			);
+
+			// sync this channel with the category
+			await channel.lockPermissions();
+			this.client.info(`[Thread] Support Channel created for ${m.author.tag} (${m.author.id})`);
+			// send initial message
+			await channel.send(
+				new MessageEmbed()
+					.setTitle('New Support Thread...')
+					.setColor('#36393E')
+					.setDescription(
+						stripIndents`
+						**First Name:** \`${PROMPT_FIRST_NAME}\`
+						**Last Name:** \`${PROMPT_LAST_NAME}\`
+						**Order ID:** \`${PROMPT_ORDER_ID ?? 'n/a'}\`
+						**Email:** \`${PROMPT_EMAIL}\`
+						**Zip Code:** \`${PROMPT_ZIP_CODE}\`
+						**Issue:** \`${PROMPT_ISSUE}\`
+						`,
+					)
+					.setFooter(`Ticket ID: ${savedThread._id}`),
+			);
+			savedThread.thread_id = channel.id;
+			// resave ticket with created channel id
+			await savedThread.save();
 
 			// end this session
 			this.sessions.delete(m.author.id);

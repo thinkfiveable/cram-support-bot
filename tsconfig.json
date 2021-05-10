@@ -18,7 +18,8 @@
       "esModuleInterop": true,
       "skipLibCheck": true,
       "isolatedModules": true,
-      "forceConsistentCasingInFileNames": true
+      "forceConsistentCasingInFileNames": true,
+      "noImplicitAny": false
     },
     "include": [
       "./**/*.ts"

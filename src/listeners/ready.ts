@@ -52,7 +52,6 @@ export default class ReadyListener extends Listener {
 	public rotateStatus() {
 		void this.changeStatus();
 		this.interval = setInterval(this.changeStatus, 1000 * 60 * 15);
-		return void 0;
 	}
 
 	public changeStatus() {

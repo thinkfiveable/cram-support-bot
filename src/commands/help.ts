@@ -26,6 +26,7 @@ export default class Help extends Command {
 		const prefix = this.client.config.PREFIX;
 		const embed = new MessageEmbed().setColor('PURPLE');
 
+		// derived from https://github.com/Naval-Base/yuudachi/blob/master/src/bot/commands/util/help.ts
 		if (command) {
 			embed.addField('❯ Description', command.description.content || 'No Description provided');
 

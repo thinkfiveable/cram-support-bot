@@ -1,6 +1,7 @@
 import { stripIndents } from 'common-tags';
 import { Command } from 'discord-akairo';
 import { Message } from 'discord.js';
+import fetch from 'node-fetch';
 import { inspect } from 'util';
 
 export default class Eval extends Command {
