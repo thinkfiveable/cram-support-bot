@@ -32,7 +32,7 @@ This repository houses the code for `Fiveable Cram Support Bot` used in the [Fiv
 You dm the bot a message, which will start the question process. If a user does not respond quick enough or provides invalid data, the ticket creation is cancelled.
 
 <p align="center">
-  <img align="center" style="width: 100%; height: auto;" src="static/vid_1.gif">
+  <img align="center" style="width: 100%; height: auto;" src="static/example.gif">
 </p>
 
 # 🤔 What does it look like from the moderators end?
