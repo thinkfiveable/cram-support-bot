@@ -19,6 +19,8 @@ export default class MessageListener extends Listener {
 		// only execute in dms, non bot users, that send a message with content, and aren't already doing the questionaire
 		if (message.guild || message.author.bot || !message.content || this.sessions.has(message.author.id)) return;
 
+		if (message.content === 'order corn') return message.channel.send('ALEXA ORDER CORN!!!');
+
 		// find existing ticket
 		const findThread = await Thread.findOne({ author_id: message.author.id, closed: false });
 		// if no existing ticket, then create one
