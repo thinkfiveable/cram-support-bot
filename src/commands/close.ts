@@ -37,7 +37,6 @@ export default class Close extends Command {
 		// get ticket opener
 		const opener = await this.client.users.fetch(ticket.author_id);
 
-		// await thread.delete();
 		this.client.modMailMainChannel?.send(stripIndents`
 			Archived Ticket \`${ticket._id}\`
 			Opener: \`${opener.tag} (${opener.id})\`
@@ -47,6 +46,6 @@ export default class Close extends Command {
 		await opener.send(`\`Your recent support ticket (${ticket._id}) has been closed.\``).catch(() => void 0);
 
 		if (msg.channel.id !== thread.id) void msg.channel.send('Ticket has been closed.');
-		return thread.send(`Ticket has been closed by \`${msg.author.tag}\`.`);
+		return thread.delete();
 	}
 }

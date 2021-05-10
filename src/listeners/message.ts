@@ -101,7 +101,11 @@ export default class MessageListener extends Listener {
 				return this.reject(m, 'Not a valid email! Cancelling ticket...');
 
 			// get zip code
-			const PROMPT_ZIP_CODE = await this.promptQuestion(m, 'zip code');
+			const PROMPT_ZIP_CODE = await this.promptQuestion(
+				m,
+				'zip code',
+				"This information will be used to verify your purchase if your purchase order ID doesn't match up, or if you don't have the ID on hand right now.",
+			);
 			// validate zip code
 			if (!/^\d{5}(?:[-\s]\d{4})?$/.test(PROMPT_ZIP_CODE))
 				return this.reject(m, 'Not a valid zip code! Cancelling ticket...');
@@ -176,8 +180,8 @@ export default class MessageListener extends Listener {
 		}
 	}
 
-	public async promptQuestion(m: Message, item: string): Promise<string> {
-		const input = await this.promptString(m, `What is your ${item}?`);
+	public async promptQuestion(m: Message, item: string, description?: string): Promise<string> {
+		const input = await this.promptString(m, `What is your ${item}?`, description);
 		// input will only be blank if a person does not answer in time
 		if (!input)
 			throw new Error(
@@ -196,9 +200,9 @@ export default class MessageListener extends Listener {
 		throw new Error(content);
 	}
 
-	private async promptString(m: Message, title: string) {
+	private async promptString(m: Message, title: string, description?: string) {
 		// prompt and ask for input
-		await m.channel.send(new PromptEmbed(m.client).setTitle(title));
+		await m.channel.send(new PromptEmbed(m.client).setTitle(title).setDescription(description ?? ''));
 		const prompt = await m.channel
 			.awaitMessages((pM: Message) => pM.author.id === m.author.id, {
 				max: 1,
