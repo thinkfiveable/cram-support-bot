@@ -66,15 +66,19 @@ Please supply the following ENV variables in a `.env` file in the root of the pr
 | ADMIN_ID             	| ID of the admin of this bot. Bypasses<br>all cooldowns/ratelimits 	|     ✔️    |
 
 ## Setup
-You can deploy this project manually using the steps below, or using the include docker-compose file by doing `docker compose up -d --build`. There is also an included `heroku.yml` file for deploying to Heroku, which should build with the Dockerfile provided.
+You can setup this project manually using the steps below, or using the include docker-compose file by doing `docker compose up -d --build`. There is also an included `heroku.yml` file for deploying to Heroku, which should build with the Dockerfile provided.
 
 ```console
-foo@bar:~$ git clone https://github.com/ThinkFiveable/cram-support-bot.git   
-foo@bar:~$ cd cram-support-bot 
-foo@bar:~/cram-support-bot$ npm install  
-foo@bar:~/cram-support-bot$ npm run build  
-// fill in env variables  
-foo@bar:~/cram-support-bot$ npm run start
+git clone https://github.com/ThinkFiveable/cram-support-bot.git   
+cd cram-support-bot 
+npm install  
+npm run build  
+```
+Be sure to fill in the env variables as seen [here](#env-variables)  
+
+To start the bot, run this command:
+```
+npm run start
 ```
 
 ## LICENSE
