@@ -53,7 +53,9 @@ export default class Fetch extends Command {
             **ID:** \`${msg.id}\`
 			**Opener:** \`${opener.tag} (${opener.id})\`
 			**Issue:** \`${
-				fetch_thread.data.issue.length > 300 ? `${fetch_thread.data.issue.substring(0, 300)}...` : fetch_thread
+				fetch_thread.data.issue.length > 300
+					? `${fetch_thread.data.issue.substring(0, 300)}...`
+					: fetch_thread.data.issue
 			}\`
 			**Responders:** \`${responders.map((x, id) => (x ? `\`${x.tag} (${x.id})\`` : `\`UNKNOWN (${id})\``))}\`
 			**Messages:**
