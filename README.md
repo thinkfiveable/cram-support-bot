@@ -71,10 +71,10 @@ You can deploy this project manually using the steps below, or using the include
 ```console
 foo@bar:~$ git clone https://github.com/ThinkFiveable/cram-support-bot.git   
 foo@bar:~$ cd cram-support-bot 
-foo@bar:~$ npm install  
-foo@bar:~$ npm run build  
+foo@bar:~/cram-support-bot$ npm install  
+foo@bar:~/cram-support-bot$ npm run build  
 // fill in env variables  
-foo@bar:~$ npm run start
+foo@bar:~/cram-support-bot$ npm run start
 ```
 
 ## LICENSE
@@ -84,7 +84,7 @@ This license can also be found [here](https://github.com/ThinkFiveable/cram-supp
 ```
 MIT License
 
-Copyright (c) 2021 Zaid (Nico)
+Copyright (c) 2021 Fiveable
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
