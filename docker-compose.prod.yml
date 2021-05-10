@@ -1,0 +1,7 @@
+version: '3.7'
+
+services:
+  bot:
+    image: zaid450/cram-support-bot
+    restart: unless-stopped
+    env_file: .env
