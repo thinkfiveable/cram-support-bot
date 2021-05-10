@@ -28,16 +28,23 @@ export default class Fetch extends Command {
 		const fetch_thread = await Thread.findById(id);
 		if (!fetch_thread) return msg.channel.send('Thread with that ID does not exist!');
 
+		// get ticket opener
 		const opener = await this.client.users.fetch(fetch_thread.author_id);
+
+		// get the ids of all the staff members who participated in the ticket
 		const responderIDs = new Set(fetch_thread.messages.map((x) => x.msg_author_id));
 		const responders = new Collection<string, User | null>();
 
+		// add ticket opener to responders list
 		responders.set(opener.id, opener);
+
+		// get user object of all staff members that participated
 		responderIDs.forEach(async (responder) => {
 			if (responder === opener.id) return;
 			responders.set(responder, await this.client.users.fetch(responder).catch(() => null));
 		});
 
+		// format message like "STAFF_MEMBER: MESSAGE THEY SENT HERE"
 		const message_log = fetch_thread.messages
 			.map((x) => `\`${responders.get(x.msg_author_id)?.tag ?? 'UNKNOWN'}: ${x.content}\``)
 			.join('\n');

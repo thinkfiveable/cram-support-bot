@@ -50,14 +50,6 @@ export default class Help extends Command {
 					`\`${command.aliases.filter((x: string) => x !== command.id).join('`, `')}\``,
 				);
 			}
-
-			if (command.userPermissions && Array.isArray(command.userPermissions)) {
-				embed.addField('❯ Permissions Needed (from user)', `\`${command.userPermissions.join('`, `')}\``);
-			}
-
-			if (command.clientPermissions && Array.isArray(command.clientPermissions)) {
-				embed.addField('❯ Permissions Needed (from me)', `\`${command.clientPermissions.join('`, `')}\``);
-			}
 			return message.channel.send(embed);
 		}
 		embed.setTitle('Commands').setDescription(

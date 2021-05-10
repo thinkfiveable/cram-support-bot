@@ -10,6 +10,8 @@ export default class ReadyListener extends Listener {
 	}
 
 	public exec() {
+		// below code checks to make sure the specified guild, modmail category, and modmail main channel are valid.
+
 		console.log(`Bot logged in as ${this.client.user!.tag}`);
 		if (!this.client.guilds.cache.has(this.client.config.GUILD))
 			throw new Error('Cannot find the specified Guild!');

@@ -1,18 +1,22 @@
 import { Schema, model, Document } from 'mongoose';
 
 const thread = new Schema({
+	// who opened the ticket
 	author_id: {
 		type: String,
 		required: true,
 	},
+	// messages sent between staff members and ticket opener
 	messages: {
 		type: Array,
 		default: [],
 	},
+	// created channel in server for this ticket
 	thread_id: {
 		type: String,
 		nullable: true,
 	},
+	// data collected from opener
 	data: {
 		first_name: String,
 		last_name: String,
@@ -28,6 +32,7 @@ const thread = new Schema({
 		type: Number,
 		default: 0,
 	},
+	// ticket closed or not
 	closed: {
 		type: Boolean,
 		default: false,

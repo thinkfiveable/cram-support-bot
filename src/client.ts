@@ -20,6 +20,7 @@ export default class Client extends AkairoClient {
 		});
 
 		this.config = config;
+		// connect to mongo db
 		void mongoose.connect(
 			config.DB_URI,
 			{
@@ -35,6 +36,7 @@ export default class Client extends AkairoClient {
 		);
 		this.db = mongoose.connection;
 
+		// boilerplate akairo stuff below
 		this.commandHandler = new CommandHandler(this, {
 			directory: join(__dirname, 'commands/'),
 			prefix: config.PREFIX,
@@ -59,6 +61,7 @@ export default class Client extends AkairoClient {
 	}
 
 	private _init() {
+		// boilerplate akairo stuff
 		this.commandHandler.useListenerHandler(this.listenerHandler);
 		this.listenerHandler.setEmitters({
 			commandHandler: this.commandHandler,

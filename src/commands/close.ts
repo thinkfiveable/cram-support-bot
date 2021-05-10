@@ -25,13 +25,16 @@ export default class Close extends Command {
 	}
 
 	public async exec(msg: Message, { channel }: { channel: TextChannel | undefined }) {
+		// allow people to run this command in either the ticket channel itself or another one and target the channel
 		const thread = channel ?? msg.channel;
 		const ticket = await Thread.findOne({ thread_id: thread.id });
 
 		if (!ticket) return msg.channel.send(`Cannot locate ticket by channel.`);
 		ticket.closed = true;
+		// close ticket
 		await ticket.save();
 
+		// get ticket opener
 		const opener = await this.client.users.fetch(ticket.author_id);
 
 		// await thread.delete();

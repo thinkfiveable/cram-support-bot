@@ -5,6 +5,7 @@ import { stripIndents } from 'common-tags';
 import * as EmailValidator from 'email-validator';
 
 export default class MessageListener extends Listener {
+	// store if people are in the middle of the questionaire already
 	public sessions = new Set<string>();
 
 	public constructor() {
@@ -15,14 +16,19 @@ export default class MessageListener extends Listener {
 	}
 
 	public async exec(message: Message) {
+		// only execute in dms, non bot users, that send a message with content, and aren't already doing the questionaire
 		if (message.guild || message.author.bot || !message.content || this.sessions.has(message.author.id)) return;
 
+		// find existing ticket
 		const findThread = await Thread.findOne({ author_id: message.author.id, closed: false });
+		// if no existing ticket, then create one
 		if (!findThread) return this.createThread(message);
 
+		// get ticket channel in server
 		const threadChannel =
 			(findThread.thread_id && (this.client.channels.cache.get(findThread.thread_id) as TextChannel)) ?? null;
 
+		// only time this channel wouldn't be avaliable is if someone deleted it manually. We close the ticket for the person.
 		if (!threadChannel) {
 			await message.channel.send(
 				new MessageEmbed()
@@ -36,6 +42,7 @@ export default class MessageListener extends Listener {
 			return findThread.save();
 		}
 
+		// send all attachments with the message.
 		const SERIALIZED_ATTACHMENTS = [];
 		for (const { attachment, name } of message.attachments.values()) {
 			if (!['jpg', 'jpeg', 'png', 'gif', 'mp4'].some((x) => name?.endsWith(x))) continue;
@@ -43,13 +50,15 @@ export default class MessageListener extends Listener {
 		}
 
 		try {
-			await threadChannel.send('New Ticket Message', {
+			// send users message to their ticket channel
+			await threadChannel.send('+', {
 				embed: new UserEmbed(message.author)
 					.setDescription(message.content)
 					.setFooter(`Message ID: ${message.id}`)
 					.setTimestamp(),
 				files: SERIALIZED_ATTACHMENTS,
 			});
+			// log this message data
 			findThread.messages.push({
 				msg_author_id: message.author.id,
 				content: Util.escapeMarkdown(message.content),
@@ -66,39 +75,46 @@ export default class MessageListener extends Listener {
 	private async createThread(m: Message) {
 		try {
 			this.client.info(`[Thread] creation process started for ${m.author.tag} (${m.author.id})`);
+			// stop another session from starting by adding them to a set
 			this.sessions.add(m.author.id);
 			await m.channel.send(
 				'Hello! Welcome to the Fiveable Cram Support bot! Please be sure to answer the following questions below in a timely fashion.',
 			);
+			// order ID indication
 			const PROMPT_ORDER_INDICATION = await this.promptString(m, 'Do you have an order ID? (y/n)');
 
 			let PROMPT_ORDER_ID: string | undefined;
-			let PROMPT_FIRST_NAME: string | undefined;
-			let PROMPT_LAST_NAME: string | undefined;
-			let PROMPT_EMAIL: string | undefined;
-			let PROMPT_ZIP_CODE: string | undefined;
-			let PROMPT_ISSUE: string | undefined;
 
 			if (/^y(?:e(?:a|s)?)?$/i.test(PROMPT_ORDER_INDICATION ?? '')) {
+				// get order ID
 				PROMPT_ORDER_ID = await this.promptQuestion(m, 'order ID');
 			}
 
-			PROMPT_FIRST_NAME = await this.promptQuestion(m, 'FIRST name');
-			PROMPT_LAST_NAME = await this.promptQuestion(m, 'LAST name');
-			PROMPT_EMAIL = await this.promptQuestion(m, 'email');
+			// get first name
+			const PROMPT_FIRST_NAME = await this.promptQuestion(m, 'FIRST name');
+			// get last name
+			const PROMPT_LAST_NAME = await this.promptQuestion(m, 'LAST name');
+			// get email
+			const PROMPT_EMAIL = await this.promptQuestion(m, 'email');
+			// check that email is valid
 			if (!EmailValidator.validate(PROMPT_EMAIL))
 				return this.reject(m, 'Not a valid email! Cancelling ticket...');
 
-			PROMPT_ZIP_CODE = await this.promptQuestion(m, 'zip code');
+			// get zip code
+			const PROMPT_ZIP_CODE = await this.promptQuestion(m, 'zip code');
+			// validate zip code
 			if (!/^\d{5}(?:[-\s]\d{4})?$/.test(PROMPT_ZIP_CODE))
 				return this.reject(m, 'Not a valid zip code! Cancelling ticket...');
 
-			PROMPT_ISSUE = await this.promptString(m, "What's the issue you are facing?");
-			if ((PROMPT_ISSUE?.length ?? 0) > 1200) return this.reject(m, 'Too long! Cancelling ticket...');
-			PROMPT_ISSUE = Util.escapeMarkdown(PROMPT_ISSUE!);
+			// get what their issue is
+			let PROMPT_ISSUE: string = await this.promptString(m, "What's the issue you are facing?");
+			if (PROMPT_ISSUE.length > 1200) return this.reject(m, 'Too long! Cancelling ticket...');
+			// escape any kind of styling they might have tried to apply
+			PROMPT_ISSUE = Util.escapeMarkdown(PROMPT_ISSUE);
 
 			this.client.info(`[Thread] data received from ${m.author.tag} (${m.author.id})`);
 
+			// save ticket to mongodb
 			const NEW_THREAD = new Thread({
 				author_id: m.author.id,
 				data: {
@@ -114,6 +130,7 @@ export default class MessageListener extends Listener {
 			const SAVED_THREAD = await NEW_THREAD.save();
 			this.client.info(`[Thread] created ${SAVED_THREAD._id} for ${m.author.tag} (${m.author.id})`);
 
+			// create a channel for their ticket
 			await this.client
 				.guild!.channels.create(`support-${m.author.username}-${m.author.discriminator}`, {
 					parent: this.client.modMailCategory!.id,
@@ -121,8 +138,10 @@ export default class MessageListener extends Listener {
 					topic: `Support thread for ${m.author.tag} (${m.author.id})`,
 				})
 				.then(async (channel) => {
+					// sync this channel with the category
 					await channel.lockPermissions();
 					this.client.info(`[Thread] Support Channel created for ${m.author.tag} (${m.author.id})`);
+					// send initial message
 					await channel.send(
 						new MessageEmbed()
 							.setTitle('New Support Thread...')
@@ -133,21 +152,24 @@ export default class MessageListener extends Listener {
 								**Last Name:** \`${PROMPT_LAST_NAME}\`
 								**Order ID:** \`${PROMPT_ORDER_ID ?? 'n/a'}\`
 								**Email:** \`${PROMPT_EMAIL}\`
-								**Zip Code:** \`${PROMPT_ZIP_CODE!}\`
+								**Zip Code:** \`${PROMPT_ZIP_CODE}\`
 								**Issue:** \`${PROMPT_ISSUE}\`
 								`,
 							)
 							.setFooter(`Ticket ID: ${SAVED_THREAD._id}`),
 					);
 					SAVED_THREAD.thread_id = channel.id;
+					// resave ticket with created channel id
 					return SAVED_THREAD.save();
 				});
 
+			// end this session
 			this.sessions.delete(m.author.id);
 			return m.channel.send(
 				"`Your ticket has been sent in! A Student Success team member will be with you shortly! If you have any more messages to say, just say them below and they'll be relayed to our team!`",
 			);
 		} catch (e) {
+			// if there was an error, end the session to prevent hanging
 			this.sessions.delete(m.author.id);
 			void m.channel.send(new MessageEmbed().setTitle('Error!').setDescription(e.toString()).setTimestamp());
 			return console.log(e);
@@ -156,11 +178,14 @@ export default class MessageListener extends Listener {
 
 	public async promptQuestion(m: Message, item: string): Promise<string> {
 		const input = await this.promptString(m, `What is your ${item}?`);
+		// input will only be blank if a person does not answer in time
 		if (!input)
 			throw new Error(
 				'You ran out of time to answer this question! Cancelling ticket creation... Feel free to open another ticket by sending a message here...',
 			);
+		// if input is too long
 		if (input.length > 75) this.reject(m, 'Too long! Cancelling ticket...');
+		// if someone says cancel at all, stop creation.
 		if (input.toLowerCase() === 'cancel') throw new Error('Cancelled.');
 
 		return input;
@@ -172,6 +197,7 @@ export default class MessageListener extends Listener {
 	}
 
 	private async promptString(m: Message, title: string) {
+		// prompt and ask for input
 		await m.channel.send(new PromptEmbed(m.client).setTitle(title));
 		const prompt = await m.channel
 			.awaitMessages((pM: Message) => pM.author.id === m.author.id, {
