@@ -39,14 +39,14 @@ export default class Reply extends Command {
 			msg_id: msg.id,
 		});
 
-		const sent_embed = new MessageEmbed()
+		const SENT_EMBED = new MessageEmbed()
 			.setAuthor(msg.author.tag, msg.author.displayAvatarURL())
 			.setDescription(content)
 			.setTimestamp()
 			.setColor('YELLOW');
-		await opener.send(sent_embed);
+		await opener.send(SENT_EMBED);
 		await ticket.save();
 
-		return msg.channel.send(sent_embed);
+		return msg.channel.send(SENT_EMBED);
 	}
 }

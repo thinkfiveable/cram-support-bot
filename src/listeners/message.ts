@@ -17,13 +17,13 @@ export default class MessageListener extends Listener {
 	public async exec(message: Message) {
 		if (message.guild || message.author.bot || !message.content || this.sessions.has(message.author.id)) return;
 
-		const FindThread = await Thread.findOne({ author_id: message.author.id, closed: false });
-		if (!FindThread) return this.createThread(message);
+		const findThread = await Thread.findOne({ author_id: message.author.id, closed: false });
+		if (!findThread) return this.createThread(message);
 
-		const ThreadChannel =
-			(FindThread.thread_id && (this.client.channels.cache.get(FindThread.thread_id) as TextChannel)) ?? null;
+		const threadChannel =
+			(findThread.thread_id && (this.client.channels.cache.get(findThread.thread_id) as TextChannel)) ?? null;
 
-		if (!ThreadChannel) {
+		if (!threadChannel) {
 			await message.channel.send(
 				new MessageEmbed()
 					.setColor('RED')
@@ -32,23 +32,23 @@ export default class MessageListener extends Listener {
 						"You have an open ticket, but I cannot find it's respective thread. I am closing this ticket, if you still need help please feel free to open another ticket or DM a staff member!",
 					),
 			);
-			FindThread.closed = true;
-			return FindThread.save();
+			findThread.closed = true;
+			return findThread.save();
 		}
 
 		try {
-			await ThreadChannel.send(
+			await threadChannel.send(
 				new UserEmbed(message.author)
 					.setDescription(message.content)
 					.setFooter(`Message ID: ${message.id}`)
 					.setTimestamp(),
 			);
-			FindThread.messages.push({
+			findThread.messages.push({
 				msg_author_id: message.author.id,
 				content: Util.escapeMarkdown(message.content),
 				msg_id: message.id,
 			});
-			await FindThread.save();
+			await findThread.save();
 			return message.channel.send('`Your message has been sent in! We will respond shortly...`');
 		} catch (e) {
 			console.log(e);
@@ -63,49 +63,49 @@ export default class MessageListener extends Listener {
 			await m.channel.send(
 				'Hello! Welcome to the Fiveable Cram Support bot! Please be sure to answer the following questions below in a timely fashion.',
 			);
-			const prompt_order_indication = await this.promptString(m, 'Do you have an order ID? (y/n)');
+			const PROMPT_ORDER_INDICATION = await this.promptString(m, 'Do you have an order ID? (y/n)');
 
-			let prompt_order_id: string | undefined;
-			let prompt_first_name: string | undefined;
-			let prompt_last_name: string | undefined;
-			let prompt_email: string | undefined;
-			let prompt_zip_code: string | undefined;
-			let prompt_issue: string | undefined;
+			let PROMPT_ORDER_ID: string | undefined;
+			let PROMPT_FIRST_NAME: string | undefined;
+			let PROMPT_LAST_NAME: string | undefined;
+			let PROMPT_EMAIL: string | undefined;
+			let PROMPT_ZIP_CODE: string | undefined;
+			let PROMPT_ISSUE: string | undefined;
 
-			if (/^y(?:e(?:a|s)?)?$/i.test(prompt_order_indication ?? '')) {
-				prompt_order_id = await this.promptQuestion(m, 'order ID');
+			if (/^y(?:e(?:a|s)?)?$/i.test(PROMPT_ORDER_INDICATION ?? '')) {
+				PROMPT_ORDER_ID = await this.promptQuestion(m, 'order ID');
 			}
 
-			prompt_first_name = await this.promptQuestion(m, 'FIRST name');
-			prompt_last_name = await this.promptQuestion(m, 'LAST name');
-			prompt_email = await this.promptQuestion(m, 'email');
-			if (!EmailValidator.validate(prompt_email))
+			PROMPT_FIRST_NAME = await this.promptQuestion(m, 'FIRST name');
+			PROMPT_LAST_NAME = await this.promptQuestion(m, 'LAST name');
+			PROMPT_EMAIL = await this.promptQuestion(m, 'email');
+			if (!EmailValidator.validate(PROMPT_EMAIL))
 				return this.reject(m, 'Not a valid email! Cancelling ticket...');
 
-			prompt_zip_code = await this.promptQuestion(m, 'zip code');
-			if (!/^\d{5}(?:[-\s]\d{4})?$/.test(prompt_zip_code))
+			PROMPT_ZIP_CODE = await this.promptQuestion(m, 'zip code');
+			if (!/^\d{5}(?:[-\s]\d{4})?$/.test(PROMPT_ZIP_CODE))
 				return this.reject(m, 'Not a valid zip code! Cancelling ticket...');
 
-			prompt_issue = await this.promptString(m, "What's the issue you are facing?");
-			if ((prompt_issue?.length ?? 0) > 1200) return this.reject(m, 'Too long! Cancelling ticket...');
-			prompt_issue = Util.escapeMarkdown(prompt_issue!);
+			PROMPT_ISSUE = await this.promptString(m, "What's the issue you are facing?");
+			if ((PROMPT_ISSUE?.length ?? 0) > 1200) return this.reject(m, 'Too long! Cancelling ticket...');
+			PROMPT_ISSUE = Util.escapeMarkdown(PROMPT_ISSUE!);
 
 			this.client.info(`[Thread] data received from ${m.author.tag} (${m.author.id})`);
 
-			const NewThread = new Thread({
+			const NEW_THREAD = new Thread({
 				author_id: m.author.id,
 				data: {
-					first_name: prompt_first_name,
-					last_name: prompt_last_name,
-					order_id: prompt_order_id ?? null,
-					email: prompt_email,
-					zip_code: prompt_zip_code,
-					issue: prompt_issue,
+					first_name: PROMPT_FIRST_NAME,
+					last_name: PROMPT_LAST_NAME,
+					order_id: PROMPT_ORDER_ID ?? null,
+					email: PROMPT_EMAIL,
+					zip_code: PROMPT_ZIP_CODE,
+					issue: PROMPT_ISSUE,
 				},
 			});
 
-			const SavedThread = await NewThread.save();
-			this.client.info(`[Thread] created ${SavedThread._id} for ${m.author.tag} (${m.author.id})`);
+			const SAVED_THREAD = await NEW_THREAD.save();
+			this.client.info(`[Thread] created ${SAVED_THREAD._id} for ${m.author.tag} (${m.author.id})`);
 
 			await this.client
 				.guild!.channels.create(`support-${m.author.username}-${m.author.discriminator}`, {
@@ -122,18 +122,18 @@ export default class MessageListener extends Listener {
 							.setColor('#36393E')
 							.setDescription(
 								stripIndents`
-								**First Name:** \`${prompt_first_name}\`
-								**Last Name:** \`${prompt_last_name}\`
-								**Order ID:** \`${prompt_order_id ?? 'n/a'}\`
-								**Email:** \`${prompt_email}\`
-								**Zip Code:** \`${prompt_zip_code!}\`
-								**Issue:** \`${prompt_issue}\`
+								**First Name:** \`${PROMPT_FIRST_NAME}\`
+								**Last Name:** \`${PROMPT_LAST_NAME}\`
+								**Order ID:** \`${PROMPT_ORDER_ID ?? 'n/a'}\`
+								**Email:** \`${PROMPT_EMAIL}\`
+								**Zip Code:** \`${PROMPT_ZIP_CODE!}\`
+								**Issue:** \`${PROMPT_ISSUE}\`
 								`,
 							)
-							.setFooter(`Ticket ID: ${SavedThread._id}`),
+							.setFooter(`Ticket ID: ${SAVED_THREAD._id}`),
 					);
-					SavedThread.thread_id = channel.id;
-					return SavedThread.save();
+					SAVED_THREAD.thread_id = channel.id;
+					return SAVED_THREAD.save();
 				});
 
 			this.sessions.delete(m.author.id);
@@ -167,7 +167,7 @@ export default class MessageListener extends Listener {
 	private async promptString(m: Message, title: string) {
 		await m.channel.send(new PromptEmbed(m.client).setTitle(title));
 		const prompt = await m.channel
-			.awaitMessages((p_m: Message) => p_m.author.id === m.author.id, {
+			.awaitMessages((pM: Message) => pM.author.id === m.author.id, {
 				max: 1,
 				time: 60000,
 				errors: ['time'],
