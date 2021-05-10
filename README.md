@@ -66,7 +66,7 @@ Please supply the following ENV variables in a `.env` file in the root of the pr
 | ADMIN_ID             	| ID of the admin of this bot. Bypasses<br>all cooldowns/ratelimits 	|     ✔️    |
 
 ## Setup
-You can deploy this project manually using the steps below, or using the include docker-compose file by doing `docker compose up -d --build`
+You can deploy this project manually using the steps below, or using the include docker-compose file by doing `docker compose up -d --build`. There is also an included `heroku.yml` file for deploying to Heroku, which should build with the Dockerfile provided.
 
 ```console
 foo@bar:~$ git clone https://github.com/ThinkFiveable/cram-support-bot.git   
