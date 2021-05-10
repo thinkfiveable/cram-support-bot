@@ -15,3 +15,4 @@ jobs:
           heroku_api_key: ${{secrets.HEROKU_API_KEY}}
           heroku_app_name: "fiveable-cram-support-bot" #Must be unique in Heroku
           heroku_email: "nico.03727@gmail.com"
+          userdocker: true
