@@ -36,13 +36,20 @@ export default class MessageListener extends Listener {
 			return findThread.save();
 		}
 
+		const SERIALIZED_ATTACHMENTS = [];
+		for (const { attachment, name } of message.attachments.values()) {
+			if (!['jpg', 'jpeg', 'png', 'gif', 'mp4'].some((x) => name?.endsWith(x))) continue;
+			SERIALIZED_ATTACHMENTS.push({ attachment, name: name ?? 'NO_NAME' });
+		}
+
 		try {
-			await threadChannel.send(
-				new UserEmbed(message.author)
+			await threadChannel.send('New Ticket Message', {
+				embed: new UserEmbed(message.author)
 					.setDescription(message.content)
 					.setFooter(`Message ID: ${message.id}`)
 					.setTimestamp(),
-			);
+				files: SERIALIZED_ATTACHMENTS,
+			});
 			findThread.messages.push({
 				msg_author_id: message.author.id,
 				content: Util.escapeMarkdown(message.content),
