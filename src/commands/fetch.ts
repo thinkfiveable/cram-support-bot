@@ -16,6 +16,11 @@ export default class Fetch extends Command {
 				},
 			],
 			channel: 'guild',
+			description: {
+				content: 'Fetch info and messages belonging to a ticket.',
+				usage: ['<id>'],
+				example: ['3297382hhfweq89w'],
+			},
 		});
 	}
 

@@ -16,6 +16,11 @@ export default class Close extends Command {
 				},
 			],
 			channel: 'guild',
+			description: {
+				content: 'Close a ticket.',
+				usage: ['[#channel]'],
+				example: ['', '#ticket-channel'],
+			},
 		});
 	}
 
