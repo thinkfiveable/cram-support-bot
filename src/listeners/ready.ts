@@ -1,7 +1,23 @@
 import { Listener } from 'discord-akairo';
-import { TextChannel, CategoryChannel } from 'discord.js';
+import { TextChannel, CategoryChannel, ActivityType } from 'discord.js';
 
 export default class ReadyListener extends Listener {
+	public interval: NodeJS.Timeout | null = null;
+	public status: { type: ActivityType; name: string }[] = [
+		{
+			type: 'COMPETING',
+			name: 'a battle for your love',
+		},
+		{
+			type: 'WATCHING',
+			name: 'questions related to cram issues',
+		},
+		{
+			type: 'WATCHING',
+			name: 'questions related to account issues',
+		},
+	];
+
 	public constructor() {
 		super('ready', {
 			emitter: 'client',
@@ -29,5 +45,20 @@ export default class ReadyListener extends Listener {
 		this.client.modMailMainChannel = this.client.channels.cache.get(
 			this.client.config.MODMAIL_MAIN_CHANNEL,
 		) as TextChannel;
+
+		return this.rotateStatus();
+	}
+
+	public rotateStatus() {
+		void this.changeStatus();
+		this.interval = setInterval(this.changeStatus, 1000 * 60 * 15);
+		return void 0;
+	}
+
+	public changeStatus() {
+		return this.client.user!.setPresence({
+			activity: this.status[Math.floor(Math.random() * this.status.length)],
+			status: 'online',
+		});
 	}
 }
