@@ -4,7 +4,7 @@
   "description": "",
   "main": "dist/index.js",
   "scripts": {
-    "build": "tsc",
+    "build": "npx rimraf dist/ && tsc",
     "lint": "npx eslint src --ext .js,.ts",
     "lint:fix": "npm run lint -- --fix",
     "start": "node dist/index.js",
@@ -25,6 +25,7 @@
     "eslint-plugin-prettier": "^3.4.0",
     "lint-staged": "^10.5.4",
     "prettier": "^2.2.1",
+    "rimraf": "^3.0.2",
     "typescript": "^4.2.3"
   },
   "dependencies": {
