@@ -1,3 +1,4 @@
+import { stripIndents } from 'common-tags';
 import { Command } from 'discord-akairo';
 import { TextChannel, Message } from 'discord.js';
 import Thread from '../schemas/Thread';
@@ -27,6 +28,14 @@ export default class Close extends Command {
 		await ticket.save();
 
 		const opener = await this.client.users.fetch(ticket.author_id);
+
+		// await thread.delete();
+		this.client.modMailMainChannel?.send(stripIndents`
+			Archived Ticket \`${ticket._id}\`
+			Opener: \`${opener.tag} (${opener.id})\`
+			Closer: \`${msg.author.tag}\`
+		`);
+
 		await opener.send(`\`Your recent support ticket (${ticket._id}) has been closed.\``).catch(() => void 0);
 
 		if (msg.channel.id !== thread.id) void msg.channel.send('Ticket has been closed.');

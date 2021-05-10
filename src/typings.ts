@@ -1,4 +1,4 @@
-import { CategoryChannel, Guild } from 'discord.js';
+import { CategoryChannel, Guild, TextChannel } from 'discord.js';
 import mongoose from 'mongoose';
 import { CommandHandler, ListenerHandler } from 'discord-akairo';
 
@@ -8,6 +8,7 @@ export interface AkClientOptions {
 	PREFIX: string;
 	MODMAIL_CATEGORY: string;
 	GUILD: string;
+	MODMAIL_MAIN_CHANNEL: string;
 }
 
 declare module 'discord-akairo' {
@@ -15,6 +16,7 @@ declare module 'discord-akairo' {
 		commandHandler: CommandHandler;
 		listenerHandler: ListenerHandler;
 		modMailCategory?: CategoryChannel;
+		modMailMainChannel?: TextChannel;
 		guild?: Guild;
 		db: mongoose.Connection;
 		config: AkClientOptions;

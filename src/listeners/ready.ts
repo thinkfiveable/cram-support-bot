@@ -1,5 +1,5 @@
 import { Listener } from 'discord-akairo';
-import { CategoryChannel } from 'discord.js';
+import { TextChannel, CategoryChannel } from 'discord.js';
 
 export default class ReadyListener extends Listener {
 	public constructor() {
@@ -20,5 +20,12 @@ export default class ReadyListener extends Listener {
 		this.client.modMailCategory = this.client.channels.cache.get(
 			this.client.config.MODMAIL_CATEGORY,
 		)! as CategoryChannel;
+
+		if (!this.client.channels.cache.has(this.client.config.MODMAIL_MAIN_CHANNEL))
+			throw new Error('Cannot find the specified main Modmail channel!');
+
+		this.client.modMailMainChannel = this.client.channels.cache.get(
+			this.client.config.MODMAIL_MAIN_CHANNEL,
+		) as TextChannel;
 	}
 }

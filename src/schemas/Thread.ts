@@ -22,6 +22,7 @@ const thread = new Schema({
 		},
 		email: String,
 		zip_code: String,
+		issue: String,
 	},
 	step: {
 		type: Number,
@@ -44,6 +45,7 @@ export interface ThreadSchema extends Document {
 		last_name: string;
 		email: string;
 		zip_code: string;
+		issue: string;
 	};
 	step: number;
 	closed: boolean;
