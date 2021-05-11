@@ -1,8 +1,9 @@
 import { Listener } from 'discord-akairo';
-import { Client, MessageEmbed, Message, Util, User, TextChannel, BufferResolvable } from 'discord.js';
+import { Client, MessageEmbed, Message, Util, User, TextChannel } from 'discord.js';
 import Thread from '../schemas/Thread';
 import { stripIndents } from 'common-tags';
 import * as EmailValidator from 'email-validator';
+import { extractMessageAttachmentsIntoArray } from '../util';
 
 export default class MessageListener extends Listener {
 	// store if people are in the middle of the questionaire already
@@ -47,12 +48,7 @@ export default class MessageListener extends Listener {
 			return findThread.save();
 		}
 
-		// send all attachments with the message.
-		const SERIALIZED_ATTACHMENTS: { attachment: BufferResolvable; name: string }[] = [];
-		for (const { attachment, name } of message.attachments.values()) {
-			if (!['jpg', 'jpeg', 'png', 'gif', 'mp4'].some((x) => name?.endsWith(x))) continue;
-			SERIALIZED_ATTACHMENTS.push({ attachment: attachment as BufferResolvable, name: name ?? 'NO_NAME' });
-		}
+		const SERIALIZED_ATTACHMENTS = extractMessageAttachmentsIntoArray(message);
 
 		try {
 			// send users message to their ticket channel

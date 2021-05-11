@@ -25,7 +25,8 @@ export default class ReOpen extends Command {
 		});
 	}
 
-	public async exec(msg: Message, { ticketID }: { ticketID: string }) {
+	public async exec(msg: Message, { ticketID }: { ticketID?: string }) {
+		if (!ticketID) return msg.channel.send('You must provide an ID!');
 		// allow people to run this command in either the ticket channel itself or another one and target the channel
 		const ticket = await Thread.findById(ticketID);
 

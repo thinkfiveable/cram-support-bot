@@ -1,6 +1,7 @@
 import { Command } from 'discord-akairo';
 import { MessageEmbed, Message } from 'discord.js';
 import Thread from '../schemas/Thread';
+import { extractMessageAttachmentsIntoArray } from '../util';
 
 export default class Reply extends Command {
 	public constructor() {
@@ -24,7 +25,7 @@ export default class Reply extends Command {
 		});
 	}
 
-	public async exec(msg: Message, { content }: { content: string }) {
+	public async exec(msg: Message, { content }: { content?: string }) {
 		if (!content) return msg.channel.send('Must supply a message to send to ticket author.');
 
 		const ticket = await Thread.findOne({ thread_id: msg.channel.id });
@@ -44,7 +45,10 @@ export default class Reply extends Command {
 			.setDescription(content)
 			.setTimestamp()
 			.setColor('YELLOW');
-		await opener.send(sentEmbed);
+		await opener.send({
+			embed: sentEmbed,
+			files: extractMessageAttachmentsIntoArray(msg),
+		});
 		await ticket.save();
 
 		return msg.channel.send(sentEmbed);

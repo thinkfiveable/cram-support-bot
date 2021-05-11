@@ -26,6 +26,7 @@ export default class Fetch extends Command {
 	}
 
 	public async exec(msg: Message, { id }: { id: string }) {
+		if (!id) return msg.channel.send('Please provide a proper ID!');
 		const fetchThread = await Thread.findById(id);
 		if (!fetchThread) return msg.channel.send('Thread with that ID does not exist!');
 		const [opener, responders, MESSAGE_LOG] = await messageFormatTicket(this.client, fetchThread);
