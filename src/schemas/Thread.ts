@@ -37,6 +37,10 @@ const thread = new Schema({
 		type: Boolean,
 		default: false,
 	},
+	subscribed: {
+		type: Array,
+		default: [],
+	},
 });
 
 export interface ThreadSchema extends Document {
@@ -54,6 +58,7 @@ export interface ThreadSchema extends Document {
 	};
 	step: number;
 	closed: boolean;
+	subscribed: string[];
 }
 
 export interface ThreadMessage {

@@ -56,13 +56,22 @@ export default class MessageListener extends Listener {
 
 		try {
 			// send users message to their ticket channel
-			await threadChannel.send({
-				embed: new UserEmbed(message.author)
-					.setDescription(message.content)
-					.setFooter(`Message ID: ${message.id}`)
-					.setTimestamp(),
-				files: SERIALIZED_ATTACHMENTS,
-			});
+			await threadChannel.send(
+				findThread.subscribed.length
+					? `${findThread.subscribed
+							.map((x) => `<@${x}>`)
+							.join(
+								' ',
+							)}, we just got a message, we just got a message, we just got a message I wonder who it's from...`
+					: '',
+				{
+					embed: new UserEmbed(message.author)
+						.setDescription(message.content)
+						.setFooter(`Message ID: ${message.id}`)
+						.setTimestamp(),
+					files: SERIALIZED_ATTACHMENTS,
+				},
+			);
 			// log this message data
 			findThread.messages.push({
 				msg_author_id: message.author.id,
@@ -159,6 +168,7 @@ export default class MessageListener extends Listener {
 					.setColor('#36393E')
 					.setDescription(
 						stripIndents`
+						**Opener:** ${m.author}
 						**First Name:** \`${PROMPT_FIRST_NAME}\`
 						**Last Name:** \`${PROMPT_LAST_NAME}\`
 						**Order ID:** \`${PROMPT_ORDER_ID ?? 'n/a'}\`
