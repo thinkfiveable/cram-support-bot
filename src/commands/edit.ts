@@ -35,7 +35,7 @@ export default class Edit extends Command {
 
 		const channel = await opener.createDM();
 		const lastReplyMessage = fetchThread.bot_messages.sort(
-			(a, b) => SU.deconstruct(a).date.getTime() - SU.deconstruct(b).date.getTime()
+			(a, b) => SU.deconstruct(b).date.getTime() - SU.deconstruct(a).date.getTime()
 		)[0];
 		if (!lastReplyMessage)
 			return msg.channel.send("You haven't sent any messages to them that I can edit!");
