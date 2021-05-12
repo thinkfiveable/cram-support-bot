@@ -13,15 +13,15 @@ export default class ReOpen extends Command {
 			args: [
 				{
 					id: 'ticketID',
-					type: 'string',
-				},
+					type: 'string'
+				}
 			],
 			channel: 'guild',
 			description: {
 				content: 'Reopen a ticket.',
 				usage: ['<id>'],
-				example: ['', '<absd823749>'],
-			},
+				example: ['', '<absd823749>']
+			}
 		});
 	}
 
@@ -30,7 +30,7 @@ export default class ReOpen extends Command {
 		// allow people to run this command in either the ticket channel itself or another one and target the channel
 		const ticket = await Thread.findById(ticketID);
 
-		if (!ticket) return msg.channel.send(`Cannot locate ticket by ID.`);
+		if (!ticket) return msg.channel.send('Cannot locate ticket by ID.');
 		ticket.closed = false;
 		// open ticket
 		await ticket.save();
@@ -41,8 +41,8 @@ export default class ReOpen extends Command {
 			{
 				parent: this.client.modMailCategory!.id,
 				reason: 'New Support Thread.',
-				topic: `Support thread for ${msg.author.tag} (${msg.author.id})`,
-			},
+				topic: `Support thread for ${msg.author.tag} (${msg.author.id})`
+			}
 		);
 
 		// sync this channel with the category
@@ -66,9 +66,9 @@ export default class ReOpen extends Command {
 
 					**Messages:**
 					${MESSAGE_LOG.length > 1200 ? `${MESSAGE_LOG.substring(0, 1200)}...` : MESSAGE_LOG}
-					`,
+					`
 				)
-				.setFooter(`Ticket ID: ${ticket._id}`),
+				.setFooter(`Ticket ID: ${ticket._id}`)
 		);
 		ticket.thread_id = channel.id;
 		// resave ticket with created channel id

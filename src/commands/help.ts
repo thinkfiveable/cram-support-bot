@@ -10,15 +10,15 @@ export default class Help extends Command {
 				{
 					id: 'command',
 					type: 'commandAlias',
-					default: null,
-				},
+					default: null
+				}
 			],
 			category: 'util',
 			description: {
 				content: 'Displays information about a command',
 				usage: '[command]',
-				example: ['ban'],
-			},
+				example: ['ban']
+			}
 		});
 	}
 
@@ -35,20 +35,20 @@ export default class Help extends Command {
 					'❯ Usage',
 					`\`${prefix}${command.aliases[0]}${
 						command.description.usage ? ` ${command.description.usage}` : ''
-					}\``,
+					}\``
 				);
 			}
 
 			if (command.description.example.length > 0)
 				embed.addField(
 					'❯ Examples',
-					command.description.example.map((x: string[]) => `\`${prefix}${x}\``).join('\n'),
+					command.description.example.map((x: string[]) => `\`${prefix}${x}\``).join('\n')
 				);
 
 			if (command.aliases.filter((x: string) => x !== command.id).length > 1) {
 				embed.addField(
 					'❯ Aliases',
-					`\`${command.aliases.filter((x: string) => x !== command.id).join('`, `')}\``,
+					`\`${command.aliases.filter((x: string) => x !== command.id).join('`, `')}\``
 				);
 			}
 			return message.channel.send(embed);
@@ -67,10 +67,10 @@ export default class Help extends Command {
 						.filter((x) => !x.ownerOnly)
 						.map(
 							(x) =>
-								`\`${this.client.config.PREFIX}${x.aliases[0]} ${x.description.usage}\` - ${x.description.content}`,
+								`\`${this.client.config.PREFIX}${x.aliases[0]} ${x.description.usage}\` - ${x.description.content}`
 						)
 						.join('\n')}
-					`,
+					`
 		);
 
 		return message.channel.send(embed);

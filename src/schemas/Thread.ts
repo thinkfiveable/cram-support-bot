@@ -4,17 +4,21 @@ const thread = new Schema({
 	// who opened the ticket
 	author_id: {
 		type: String,
-		required: true,
+		required: true
 	},
 	// messages sent between staff members and ticket opener
 	messages: {
 		type: Array,
-		default: [],
+		default: []
+	},
+	bot_messages: {
+		type: Array,
+		default: []
 	},
 	// created channel in server for this ticket
 	thread_id: {
 		type: String,
-		nullable: true,
+		nullable: true
 	},
 	// data collected from opener
 	data: {
@@ -22,25 +26,25 @@ const thread = new Schema({
 		last_name: String,
 		order_id: {
 			type: String,
-			nullable: true,
+			nullable: true
 		},
 		email: String,
 		zip_code: String,
-		issue: String,
+		issue: String
 	},
 	step: {
 		type: Number,
-		default: 0,
+		default: 0
 	},
 	// ticket closed or not
 	closed: {
 		type: Boolean,
-		default: false,
+		default: false
 	},
 	subscribed: {
 		type: Array,
-		default: [],
-	},
+		default: []
+	}
 });
 
 export interface ThreadSchema extends Document {
@@ -48,6 +52,7 @@ export interface ThreadSchema extends Document {
 	author_id: string;
 	thread_id: string | null;
 	messages: ThreadMessage[];
+	bot_messages: string[];
 	data: {
 		order_id: string | null;
 		first_name: string;

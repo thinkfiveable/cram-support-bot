@@ -13,15 +13,15 @@ export default class Fetch extends Command {
 			args: [
 				{
 					id: 'id',
-					type: 'string',
-				},
+					type: 'string'
+				}
 			],
 			channel: 'guild',
 			description: {
 				content: 'Fetch info and messages belonging to a ticket.',
 				usage: ['<id>'],
-				example: ['3297382hhfweq89w'],
-			},
+				example: ['3297382hhfweq89w']
+			}
 		});
 	}
 

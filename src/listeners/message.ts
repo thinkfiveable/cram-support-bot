@@ -4,6 +4,7 @@ import Thread from '../schemas/Thread';
 import { stripIndents } from 'common-tags';
 import * as EmailValidator from 'email-validator';
 import { extractMessageAttachmentsIntoArray } from '../util';
+import Guild from '../schemas/Guild';
 
 export default class MessageListener extends Listener {
 	// store if people are in the middle of the questionaire already
@@ -12,7 +13,7 @@ export default class MessageListener extends Listener {
 	public constructor() {
 		super('message', {
 			emitter: 'client',
-			event: 'message',
+			event: 'message'
 		});
 	}
 
@@ -23,7 +24,11 @@ export default class MessageListener extends Listener {
 		}
 
 		// only execute in dms, non bot users, that send a message with content, and aren't already doing the questionaire
-		if (message.guild || message.author.bot || !message.content || this.sessions.has(message.author.id)) return;
+		if (message.guild || message.author.bot || !message.content || this.sessions.has(message.author.id))
+			return;
+
+		const mainGuild = await Guild.findById(this.client.guild!.id);
+		if (mainGuild?.blocklist.includes(message.author.id)) return;
 
 		// find existing ticket
 		const findThread = await Thread.findOne({ author_id: message.author.id, closed: false });
@@ -32,7 +37,8 @@ export default class MessageListener extends Listener {
 
 		// get ticket channel in server
 		const threadChannel =
-			(findThread.thread_id && (this.client.channels.cache.get(findThread.thread_id) as TextChannel)) ?? null;
+			(findThread.thread_id && (this.client.channels.cache.get(findThread.thread_id) as TextChannel)) ??
+			null;
 
 		// only time this channel wouldn't be avaliable is if someone deleted it manually. We close the ticket for the person.
 		if (!threadChannel) {
@@ -41,8 +47,8 @@ export default class MessageListener extends Listener {
 					.setColor('RED')
 					.setTitle('Error!')
 					.setDescription(
-						'You have an open ticket, but I cannot find its respective thread. I am closing this ticket, if you still need help please feel free to open another ticket or DM a staff member!',
-					),
+						'You have an open ticket, but I cannot find its respective thread. I am closing this ticket, if you still need help please feel free to open another ticket or DM a staff member!'
+					)
 			);
 			findThread.closed = true;
 			return findThread.save();
@@ -57,7 +63,7 @@ export default class MessageListener extends Listener {
 					? `${findThread.subscribed
 							.map((x) => `<@${x}>`)
 							.join(
-								' ',
+								' '
 							)}, we just got a message, we just got a message, we just got a message I wonder who it's from...`
 					: '',
 				{
@@ -65,20 +71,22 @@ export default class MessageListener extends Listener {
 						.setDescription(message.content)
 						.setFooter(`Message ID: ${message.id}`)
 						.setTimestamp(),
-					files: SERIALIZED_ATTACHMENTS,
-				},
+					files: SERIALIZED_ATTACHMENTS
+				}
 			);
 			// log this message data
 			findThread.messages.push({
 				msg_author_id: message.author.id,
 				content: Util.escapeMarkdown(message.content),
-				msg_id: message.id,
+				msg_id: message.id
 			});
 			await findThread.save();
 			return message.channel.send('`Your message has been sent in! We will respond shortly...`');
 		} catch (e) {
 			console.log(e);
-			return message.channel.send('There was an issue sending in your message, please contact a staff member!');
+			return message.channel.send(
+				'There was an issue sending in your message, please contact a staff member!'
+			);
 		}
 	}
 
@@ -88,7 +96,7 @@ export default class MessageListener extends Listener {
 			// stop another session from starting by adding them to a set
 			this.sessions.add(m.author.id);
 			await m.channel.send(
-				'Hello! Welcome to the Fiveable Cram Support bot! Please be sure to answer the following questions below in a timely fashion.',
+				'Hello! Welcome to the Fiveable Cram Support bot! Please be sure to answer the following questions below in a timely fashion.'
 			);
 			// order ID indication
 			const PROMPT_ORDER_INDICATION = await this.promptString(m, 'Do you have an order ID? (y/n)');
@@ -114,7 +122,7 @@ export default class MessageListener extends Listener {
 			const PROMPT_ZIP_CODE = await this.promptQuestion(
 				m,
 				'zip code',
-				"This information will be used to verify your purchase if your purchase order ID doesn't match up, or if you don't have the ID on hand right now.",
+				"This information will be used to verify your purchase if your purchase order ID doesn't match up, or if you don't have the ID on hand right now."
 			);
 			// validate zip code
 			if (!/^\d{5}(?:[-\s]\d{4})?$/.test(PROMPT_ZIP_CODE))
@@ -137,8 +145,8 @@ export default class MessageListener extends Listener {
 					order_id: PROMPT_ORDER_ID ?? null,
 					email: PROMPT_EMAIL,
 					zip_code: PROMPT_ZIP_CODE,
-					issue: PROMPT_ISSUE,
-				},
+					issue: PROMPT_ISSUE
+				}
 			});
 
 			const savedThread = await newThread.save();
@@ -150,8 +158,8 @@ export default class MessageListener extends Listener {
 				{
 					parent: this.client.modMailCategory!.id,
 					reason: 'New Support Thread.',
-					topic: `Support thread for ${m.author.tag} (${m.author.id})`,
-				},
+					topic: `Support thread for ${m.author.tag} (${m.author.id})`
+				}
 			);
 
 			// sync this channel with the category
@@ -171,9 +179,9 @@ export default class MessageListener extends Listener {
 						**Email:** \`${PROMPT_EMAIL}\`
 						**Zip Code:** \`${PROMPT_ZIP_CODE}\`
 						**Issue:** \`${PROMPT_ISSUE}\`
-						`,
+						`
 					)
-					.setFooter(`Ticket ID: ${savedThread._id}`),
+					.setFooter(`Ticket ID: ${savedThread._id}`)
 			);
 			savedThread.thread_id = channel.id;
 			// resave ticket with created channel id
@@ -182,12 +190,14 @@ export default class MessageListener extends Listener {
 			// end this session
 			this.sessions.delete(m.author.id);
 			return m.channel.send(
-				"`Your ticket has been sent in! A Student Success team member will be with you shortly! If you have any more messages to say, just say them below and they'll be relayed to our team!`",
+				"`Your ticket has been sent in! A Student Success team member will be with you shortly! If you have any more messages to say, just say them below and they'll be relayed to our team!`"
 			);
 		} catch (e) {
 			// if there was an error, end the session to prevent hanging
 			this.sessions.delete(m.author.id);
-			void m.channel.send(new MessageEmbed().setTitle('Error!').setDescription(e.toString()).setTimestamp());
+			void m.channel.send(
+				new MessageEmbed().setTitle('Error!').setDescription(e.toString()).setTimestamp()
+			);
 			return console.log(e);
 		}
 	}
@@ -197,7 +207,7 @@ export default class MessageListener extends Listener {
 		// input will only be blank if a person does not answer in time
 		if (!input)
 			throw new Error(
-				'You ran out of time to answer this question! Cancelling ticket creation... Feel free to open another ticket by sending a message here...',
+				'You ran out of time to answer this question! Cancelling ticket creation... Feel free to open another ticket by sending a message here...'
 			);
 		// if input is too long
 		if (input.length > 75) this.reject(m, 'Too long! Cancelling ticket...');
@@ -219,7 +229,7 @@ export default class MessageListener extends Listener {
 			.awaitMessages((pM: Message) => pM.author.id === m.author.id, {
 				max: 1,
 				time: 60000,
-				errors: ['time'],
+				errors: ['time']
 			})
 			.then((x) => x.first())
 			.catch((x) => x.first());

@@ -13,8 +13,8 @@ export default class Stats extends Command {
 			description: {
 				content: 'Get statistics about this running instance.',
 				usage: [''],
-				example: [''],
-			},
+				example: ['']
+			}
 		});
 	}
 
@@ -25,23 +25,31 @@ export default class Stats extends Command {
 			new MessageEmbed()
 				.setTitle('Statistics about me!')
 				.setColor('GREEN')
-				.addField('❯ Memory Usage', `${Math.round(process.memoryUsage().heapUsed / 1024 / 1024)}MB`, true)
+				.addField(
+					'❯ Memory Usage',
+					`${Math.round(process.memoryUsage().heapUsed / 1024 / 1024)}MB`,
+					true
+				)
 				.addField(
 					'❯ General Stats',
 					stripIndents`
                     • Users: ${this.client.users.cache.size}
                     • Channels: ${this.client.channels.cache.size}
                 `,
-					true,
+					true
 				)
-				.addField('❯ Source Code', '[View Here](https://github.com/ThinkFiveable/cram-support-bot)', false)
+				.addField(
+					'❯ Source Code',
+					'[View Here](https://github.com/ThinkFiveable/cram-support-bot)',
+					false
+				)
 				.addField(
 					'❯ Library',
 					'[discord.js](https://discord.js.org)[-akairo](https://github.com/1Computer1/discord-akairo)',
-					true,
+					true
 				)
 				.setThumbnail(this.client.user?.displayAvatarURL() ?? '')
-				.setFooter(`© 2021 Fiveable | Created by ${creator!.tag}`, creator!.displayAvatarURL()),
+				.setFooter(`© 2021 Fiveable | Created by ${creator!.tag}`, creator!.displayAvatarURL())
 		);
 	}
 }

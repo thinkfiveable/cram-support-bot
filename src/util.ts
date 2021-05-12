@@ -1,9 +1,10 @@
+import { MessageEmbed } from 'discord.js';
 import { Collection, Client, User, BufferResolvable, Message } from 'discord.js';
 import { ThreadSchema } from './schemas/Thread';
 
 export async function messageFormatTicket(
 	client: Client,
-	ticket: ThreadSchema,
+	ticket: ThreadSchema
 ): Promise<[User, Collection<string, User | null>, string]> {
 	// get ticket opener
 	const opener = await client.users.fetch(ticket.author_id);
@@ -25,7 +26,9 @@ export async function messageFormatTicket(
 	return [
 		opener,
 		responders,
-		ticket.messages.map((x) => `\`${responders.get(x.msg_author_id)?.tag ?? 'UNKNOWN'}: ${x.content}\``).join('\n'),
+		ticket.messages
+			.map((x) => `\`${responders.get(x.msg_author_id)?.tag ?? 'UNKNOWN'}: ${x.content}\``)
+			.join('\n')
 	];
 }
 
@@ -42,4 +45,12 @@ export function extractMessageAttachmentsIntoArray(m: Message) {
 	}
 
 	return SERIALIZED_ATTACHMENTS;
+}
+
+export function createReplyEmbed(m: Message, content: string) {
+	return new MessageEmbed()
+		.setAuthor(m.author.tag, m.author.displayAvatarURL())
+		.setDescription(content)
+		.setTimestamp()
+		.setColor('YELLOW');
 }

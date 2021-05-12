@@ -13,20 +13,20 @@ export default class Close extends Command {
 				{
 					id: 'thread',
 					type: 'textChannel',
-					default: (m) => m.channel,
+					default: (m) => m.channel
 				},
 				{
 					id: 'silent',
 					match: 'flag',
-					flag: ['--silent', '--silently'],
-				},
+					flag: ['--silent', '--silently']
+				}
 			],
 			channel: 'guild',
 			description: {
 				content: 'Close a ticket.',
 				usage: ['[#channel]'],
-				example: ['', '#ticket-channel'],
-			},
+				example: ['', '#ticket-channel']
+			}
 		});
 	}
 
@@ -34,7 +34,7 @@ export default class Close extends Command {
 		// allow people to run this command in either the ticket channel itself or another one and target the channel
 		const ticket = await Thread.findOne({ thread_id: thread.id });
 
-		if (!ticket) return msg.channel.send(`Cannot locate ticket by channel.`);
+		if (!ticket) return msg.channel.send('Cannot locate ticket by channel.');
 		ticket.closed = true;
 		// close ticket
 		await ticket.save();
@@ -49,7 +49,9 @@ export default class Close extends Command {
 		`);
 
 		if (!silent)
-			await opener.send(`\`Your recent support ticket (${ticket._id}) has been closed.\``).catch(() => void 0);
+			await opener
+				.send(`\`Your recent support ticket (${ticket._id}) has been closed.\``)
+				.catch(() => void 0);
 
 		if (msg.channel.id !== thread.id) void msg.channel.send('Ticket has been closed.');
 		return thread.delete();

@@ -12,15 +12,15 @@ export default class Subscribe extends Command {
 				{
 					id: 'user',
 					type: 'user',
-					default: (m) => m.author,
-				},
+					default: (m) => m.author
+				}
 			],
 			channel: 'guild',
 			description: {
 				content: 'Subscribe yourself to a ticket.',
 				usage: ['[user]'],
-				example: ['@nico'],
-			},
+				example: ['@nico']
+			}
 		});
 	}
 

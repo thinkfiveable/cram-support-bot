@@ -13,7 +13,7 @@ const client = new Client({
 	PREFIX: process.env.PREFIX!,
 	MODMAIL_CATEGORY: process.env.MODMAIL_CATEGORY!,
 	GUILD: process.env.GUILD!,
-	MODMAIL_MAIN_CHANNEL: process.env.MODMAIL_MAIN_CHANNEL!,
+	MODMAIL_MAIN_CHANNEL: process.env.MODMAIL_MAIN_CHANNEL!
 });
 
 // start bot

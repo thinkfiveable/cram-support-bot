@@ -13,6 +13,7 @@ export interface AkClientOptions {
 
 declare module 'discord-akairo' {
 	interface AkairoClient {
+		statusInterval: NodeJS.Timeout | null;
 		commandHandler: CommandHandler;
 		listenerHandler: ListenerHandler;
 		modMailCategory?: CategoryChannel;

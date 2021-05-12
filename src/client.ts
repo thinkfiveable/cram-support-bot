@@ -15,8 +15,8 @@ export default class Client extends AkairoClient {
 			messageSweepInterval: 43200,
 			messageEditHistoryMaxSize: 2,
 			ws: {
-				intents: [Intents.NON_PRIVILEGED],
-			},
+				intents: [Intents.NON_PRIVILEGED]
+			}
 		});
 
 		this.config = config;
@@ -36,12 +36,12 @@ export default class Client extends AkairoClient {
 					ended: 'Cancelled command.',
 					timeout:
 						'You ran out of time! Please try answering within 120 seconds next time. You can reattempt this command.',
-					time: 120000,
-				},
-			},
+					time: 120000
+				}
+			}
 		});
 		this.listenerHandler = new ListenerHandler(this, {
-			directory: join(__dirname, 'listeners/'),
+			directory: join(__dirname, 'listeners/')
 		});
 	}
 
@@ -50,7 +50,7 @@ export default class Client extends AkairoClient {
 		this.commandHandler.useListenerHandler(this.listenerHandler);
 		this.listenerHandler.setEmitters({
 			commandHandler: this.commandHandler,
-			listenerHandler: this.listenerHandler,
+			listenerHandler: this.listenerHandler
 		});
 		this.commandHandler.loadAll();
 		this.listenerHandler.loadAll();
@@ -61,13 +61,13 @@ export default class Client extends AkairoClient {
 			{
 				useNewUrlParser: true,
 				useFindAndModify: false,
-				useUnifiedTopology: true,
+				useUnifiedTopology: true
 			},
 			(e) => {
 				// eslint-disable-next-line @typescript-eslint/no-base-to-string
 				console.error.bind(`Error connecting to MongoDB Database. ${e}`);
 				process.exitCode = 1;
-			},
+			}
 		);
 	}
 

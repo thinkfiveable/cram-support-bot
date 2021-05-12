@@ -1,9 +1,9 @@
 module.exports = {
   root: true,
   extends: [
-    "marine/prettier/node",
     "plugin:@typescript-eslint/recommended",
     "plugin:prettier/recommended",
+    "prettier"
   ],
   env: {
     node: true,

@@ -14,11 +14,11 @@ export default class Eval extends Command {
 				{
 					id: 'code',
 					type: 'string',
-					match: 'rest',
-				},
+					match: 'rest'
+				}
 			],
 			channel: 'guild',
-			ownerOnly: true,
+			ownerOnly: true
 		});
 	}
 
@@ -37,7 +37,7 @@ export default class Eval extends Command {
 
 	private _tooLong(body: string): Promise<string> {
 		return fetch('https://paste.discord.land/documents', { method: 'POST', body }).then((d) =>
-			d.json().then((v) => v.key),
+			d.json().then((v) => v.key)
 		);
 	}
 
@@ -57,7 +57,7 @@ export default class Eval extends Command {
 			if (final.length > 2000) {
 				const key = await this._tooLong(clean);
 				return msg.util!.send(
-					`Output exceeded 2000 characters (${final.length}). https://paste.discord.land/${key}.js`,
+					`Output exceeded 2000 characters (${final.length}). https://paste.discord.land/${key}.js`
 				);
 			}
 
@@ -74,7 +74,7 @@ export default class Eval extends Command {
 			if (final.length > 2000) {
 				const key = await this._tooLong(clean);
 				return msg.channel.send(
-					`Error exceeded 2000 characters (${final.length}). https://paste.discord.land/${key}.js`,
+					`Error exceeded 2000 characters (${final.length}). https://paste.discord.land/${key}.js`
 				);
 			}
 

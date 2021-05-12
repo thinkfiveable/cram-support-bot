@@ -1,7 +1,7 @@
 import { Command } from 'discord-akairo';
 import { MessageEmbed, Message } from 'discord.js';
 import Thread from '../schemas/Thread';
-import { extractMessageAttachmentsIntoArray } from '../util';
+import { createReplyEmbed, extractMessageAttachmentsIntoArray } from '../util';
 
 export default class Reply extends Command {
 	public constructor() {
@@ -13,15 +13,15 @@ export default class Reply extends Command {
 				{
 					id: 'content',
 					type: 'string',
-					match: 'rest',
-				},
+					match: 'rest'
+				}
 			],
 			channel: 'guild',
 			description: {
 				content: 'Reply to a ticket in a ticket channel. If it is closed, replying will reopen it.',
 				usage: ['<content>'],
-				example: ["Hi, I'm here to help you!"],
-			},
+				example: ["Hi, I'm here to help you!"]
+			}
 		});
 	}
 
@@ -37,18 +37,15 @@ export default class Reply extends Command {
 		ticket.messages.push({
 			content: content,
 			msg_author_id: msg.author.id,
-			msg_id: msg.id,
+			msg_id: msg.id
 		});
 
-		const sentEmbed = new MessageEmbed()
-			.setAuthor(msg.author.tag, msg.author.displayAvatarURL())
-			.setDescription(content)
-			.setTimestamp()
-			.setColor('YELLOW');
-		await opener.send({
+		const sentEmbed = createReplyEmbed(msg, content);
+		const sentMessage = await opener.send({
 			embed: sentEmbed,
-			files: extractMessageAttachmentsIntoArray(msg),
+			files: extractMessageAttachmentsIntoArray(msg)
 		});
+		ticket.bot_messages.push(sentMessage.id);
 		await ticket.save();
 
 		return msg.channel.send(sentEmbed);
