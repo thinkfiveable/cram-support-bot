@@ -154,7 +154,7 @@ export default class MessageListener extends Listener {
 
 			// create a channel for their ticket
 			const channel = await this.client.guild!.channels.create(
-				`support-${m.author.username}-${m.author.discriminator}`,
+				`support-${m.author.username.substring(0, 9)}-${m.author.discriminator}`,
 				{
 					parent: this.client.modMailCategory!.id,
 					reason: 'New Support Thread.',
@@ -172,7 +172,7 @@ export default class MessageListener extends Listener {
 					.setColor('#36393E')
 					.setDescription(
 						stripIndents`
-						**Opener:** ${m.author}
+						**Opener:** ${m.author} (${m.author.id})
 						**First Name:** \`${PROMPT_FIRST_NAME}\`
 						**Last Name:** \`${PROMPT_LAST_NAME}\`
 						**Order ID:** \`${PROMPT_ORDER_ID ?? 'n/a'}\`

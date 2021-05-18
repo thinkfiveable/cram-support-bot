@@ -40,7 +40,7 @@ export function extractMessageAttachmentsIntoArray(m: Message) {
 	// send all attachments with the message.
 	const SERIALIZED_ATTACHMENTS: { attachment: BufferResolvable; name: string }[] = [];
 	for (const { attachment, name } of m.attachments.values()) {
-		if (!['jpg', 'jpeg', 'png', 'gif', 'mp4'].some((x) => name?.endsWith(x))) continue;
+		// if (!['jpg', 'jpeg', 'png', 'gif', 'mp4'].some((x) => name?.endsWith(x))) continue;
 		SERIALIZED_ATTACHMENTS.push({ attachment: attachment as BufferResolvable, name: name ?? 'NO_NAME' });
 	}
 
