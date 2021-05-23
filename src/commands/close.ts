@@ -1,5 +1,6 @@
 import { stripIndents } from 'common-tags';
 import { Command } from 'discord-akairo';
+import { MessageEmbed } from 'discord.js';
 import { TextChannel, Message } from 'discord.js';
 import Thread from '../schemas/Thread';
 
@@ -42,11 +43,16 @@ export default class Close extends Command {
 		// get ticket opener
 		const opener = await this.client.users.fetch(ticket.author_id);
 
-		this.client.modMailMainChannel?.send(stripIndents`
-			Archived Ticket \`${ticket._id}\`
-			Opener: \`${opener.tag} (${opener.id})\`
-			Closer: \`${msg.author.tag}\`
-		`);
+		this.client.modMailMainChannel?.send(
+			new MessageEmbed()
+				.setColor('RED')
+				.setTitle(`${opener.tag} (\`${opener.id}\`)`)
+				.setFooter(`Closed by ${msg.author.tag} (${msg.author.id})`)
+				.setTimestamp().setDescription(stripIndents`
+				Archived Ticket \`${ticket._id}\`
+				Reason: \`${ticket.data.issue}\`
+			`)
+		);
 
 		if (!silent)
 			await opener
