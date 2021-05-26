@@ -41,13 +41,20 @@ export default class Reply extends Command {
 		});
 
 		const sentEmbed = createReplyEmbed(msg, content);
-		const sentMessage = await opener.send({
-			embed: sentEmbed,
-			files: extractMessageAttachmentsIntoArray(msg)
-		});
-		ticket.bot_messages.push(sentMessage.id);
-		await ticket.save();
 
-		return msg.channel.send(sentEmbed.setFooter(`Message ID: ${sentMessage.id}`));
+		try {
+			const sentMessage = await opener.send({
+				embed: sentEmbed,
+				files: extractMessageAttachmentsIntoArray(msg)
+			});
+			ticket.bot_messages.push(sentMessage.id);
+			await ticket.save();
+
+			return msg.channel.send(sentEmbed.setFooter(`Message ID: ${sentMessage.id}`));
+		} catch (e) {
+			return msg.channel.send(
+				'There was an error sending your message to this user. They might have DMs disabled! Please reach out to them yourself.'
+			);
+		}
 	}
 }

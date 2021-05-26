@@ -62,9 +62,15 @@ export default class Edit extends Command {
 			return msg.channel.send('I did not send this message, therefore I cannot edit it!');
 
 		const newEmbed = createReplyEmbed(msg, newContent);
-		await lastMessage.edit(newEmbed);
-		return msg.channel.send('Successfully edited message', {
-			embed: newEmbed
-		});
+		try {
+			await lastMessage.edit(newEmbed);
+			return msg.channel.send('Successfully edited message', {
+				embed: newEmbed
+			});
+		} catch (e) {
+			return msg.channel.send(
+				'That user has DMs disabled, cannot edit message! Please reach out to them directly.'
+			);
+		}
 	}
 }
