@@ -32,7 +32,6 @@ export default class Edit extends Command {
 	}
 
 	public async exec(msg: Message, { messageID, newContent }: { messageID?: string; newContent?: string }) {
-		console.log(messageID);
 		if (!newContent) return msg.channel.send('You must provide content to edit your message to.');
 		const fetchThread = await Thread.findOne({ thread_id: msg.channel.id });
 		if (!fetchThread) return msg.channel.send('This channel is not a ticket!');
