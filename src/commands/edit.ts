@@ -25,7 +25,7 @@ export default class Edit extends Command {
 			channel: 'guild',
 			description: {
 				content: 'Edit the last message sent to this person in the ticket.',
-				usage: ['<newContent>'],
+				usage: ['[--id=message-id] <newContent>'],
 				example: ['Whoops, made a typo here is the new content!!!']
 			}
 		});

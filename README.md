@@ -48,7 +48,9 @@ You dm the bot a message, which will start the question process. If a user does 
 | `s!close [#channel]` 	| Close a ticket                                                                   	|
 | `s!fetch <id>`       	| Fetch info and messages <br>belonging to a ticket                                	|
 | `s!help [command]`   	| More info about a commmand                                                       	|
+| `s!stats`   	        | Get info about the running bot instance                                          	|
 | `s!reply <content>`  	| Reply to a ticket in a ticket channel.<br>If ticket is closed, this will reopen. 	|
+| `s!edit [--id=message-id] <content>` |  Edit either a message sent to a user through the bot. Defaults to last sent.	|
 
 # 🚧 Getting Started
 
