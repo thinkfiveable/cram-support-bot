@@ -1,6 +1,7 @@
 import { stripIndents } from 'common-tags';
 import { Command } from 'discord-akairo';
 import { MessageEmbed, Message } from 'discord.js';
+import Thread from '../schemas/Thread';
 
 export default class Stats extends Command {
 	public constructor() {
@@ -35,6 +36,7 @@ export default class Stats extends Command {
 					stripIndents`
                     • Users: ${this.client.users.cache.size}
                     • Channels: ${this.client.channels.cache.size}
+					• Tickets opened: ${await Thread.countDocuments()}
                 `,
 					true
 				)
