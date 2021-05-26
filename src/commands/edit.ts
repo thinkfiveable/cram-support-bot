@@ -11,6 +11,12 @@ export default class Edit extends Command {
 			cooldown: 20000,
 			args: [
 				{
+					id: 'messageID',
+					type: 'string',
+					match: 'option',
+					flag: '--id='
+				},
+				{
 					id: 'newContent',
 					type: 'string',
 					match: 'rest'
@@ -25,8 +31,9 @@ export default class Edit extends Command {
 		});
 	}
 
-	public async exec(msg: Message, { newContent }: { newContent?: string }) {
-		if (!newContent) return msg.channel.send('You must provide a message content to edit.');
+	public async exec(msg: Message, { messageID, newContent }: { messageID?: string; newContent?: string }) {
+		console.log(messageID);
+		if (!newContent) return msg.channel.send('You must provide content to edit your message to.');
 		const fetchThread = await Thread.findOne({ thread_id: msg.channel.id });
 		if (!fetchThread) return msg.channel.send('This channel is not a ticket!');
 
@@ -40,8 +47,19 @@ export default class Edit extends Command {
 		if (!lastReplyMessage)
 			return msg.channel.send("You haven't sent any messages to them that I can edit!");
 
-		const lastMessage = await channel.messages.fetch(lastReplyMessage).catch(() => null);
-		if (!lastMessage) return msg.channel.send('There are no messages between you and this member.');
+		const lastMessage = await channel.messages
+			.fetch(messageID ? messageID.toString() : lastReplyMessage)
+			.catch(() => null);
+		if (!lastMessage) {
+			if (messageID)
+				return msg.channel.send(
+					"Could not find that specified message! Are you sure that's the correct ID?"
+				);
+			return msg.channel.send('There are no messages between you and this member.');
+		}
+
+		if (!lastMessage.author.bot || lastMessage.author.id !== lastMessage.client.user!.id)
+			return msg.channel.send('I did not send this message, therefore I cannot edit it!');
 
 		const newEmbed = createReplyEmbed(msg, newContent);
 		await lastMessage.edit(newEmbed);
