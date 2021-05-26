@@ -1,5 +1,5 @@
 import { MessageEmbed } from 'discord.js';
-import { Collection, Client, User, BufferResolvable, Message } from 'discord.js';
+import { Collection, Client, User, BufferResolvable, Message, SnowflakeUtil } from 'discord.js';
 import { ThreadSchema } from './schemas/Thread';
 
 export async function messageFormatTicket(
@@ -27,7 +27,14 @@ export async function messageFormatTicket(
 		opener,
 		responders,
 		ticket.messages
-			.map((x) => `\`${responders.get(x.msg_author_id)?.tag ?? 'UNKNOWN'}: ${x.content}\``)
+			.map(
+				(x) =>
+					`${responders.get(x.msg_author_id)?.tag ?? 'UNKNOWN'} (${SnowflakeUtil.deconstruct(
+						x.msg_id
+					)
+						.date.toString()
+						.substring(4, 33)}): ${x.content}`
+			)
 			.join('\n')
 	];
 }

@@ -1,5 +1,6 @@
 import { stripIndents } from 'common-tags';
 import { Command } from 'discord-akairo';
+import { MessageAttachment } from 'discord.js';
 import { Message } from 'discord.js';
 import Thread from '../schemas/Thread';
 import { messageFormatTicket, respondersFormat } from '../util';
@@ -31,8 +32,9 @@ export default class Fetch extends Command {
 		if (!fetchThread) return msg.channel.send('Thread with that ID does not exist!');
 		const [opener, responders, MESSAGE_LOG] = await messageFormatTicket(this.client, fetchThread);
 
-		return msg.channel.send(stripIndents`
-            **ID:** \`${msg.id}\`
+		return msg.channel.send(
+			stripIndents`
+            **ID:** \`${fetchThread.id}\`
 			**Opener:** \`${opener.tag} (${opener.id})\`
 			**Issue:** \`${
 				fetchThread.data.issue.length > 300
@@ -40,9 +42,20 @@ export default class Fetch extends Command {
 					: fetchThread.data.issue
 			}\`
 			**Responders:** \`${respondersFormat(responders)}\`
-			**Messages:**
-
-			${MESSAGE_LOG.length > 1200 ? `${MESSAGE_LOG.substring(0, 1200)}...` : MESSAGE_LOG}
-            `);
+			**Message log is attached to this message.**
+            `,
+			{
+				files: [
+					new MessageAttachment(
+						Buffer.from(stripIndents`
+						ID: ${fetchThread.id}
+						
+						${MESSAGE_LOG}
+						`),
+						`${opener.tag.replace('#', '-')}-MESSAGES-${Date.now()}.txt`
+					)
+				]
+			}
+		);
 	}
 }
