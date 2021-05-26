@@ -1,5 +1,5 @@
 import { Command } from 'discord-akairo';
-import { MessageEmbed, Message } from 'discord.js';
+import { Message } from 'discord.js';
 import Thread from '../schemas/Thread';
 import { createReplyEmbed, extractMessageAttachmentsIntoArray } from '../util';
 
@@ -48,6 +48,6 @@ export default class Reply extends Command {
 		ticket.bot_messages.push(sentMessage.id);
 		await ticket.save();
 
-		return msg.channel.send(sentEmbed);
+		return msg.channel.send(sentEmbed.setFooter(`Message ID: ${sentMessage.id}`));
 	}
 }
