@@ -75,6 +75,14 @@ export default class Client extends AkairoClient {
 		return console.log(`\x1b[32m\x1b[1m${str}\x1b[0m`);
 	}
 
+	public info_but_yellow(str: string) {
+		return console.log(`\x1b[33m\x1b[1m${str}\x1b[0m`);
+	}
+
+	public error(str: string) {
+		return console.log(`\x1b[31m\x1b[1m${str}\x1b[0m`);
+	}
+
 	public async login(token: string) {
 		await this._init();
 		console.log('Logging in...');

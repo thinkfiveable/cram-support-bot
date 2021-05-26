@@ -22,5 +22,7 @@ declare module 'discord-akairo' {
 		db: mongoose.Connection;
 		config: AkClientOptions;
 		info(str: string): void;
+		info_but_yellow(str: string): void;
+		error(str: string): void;
 	}
 }
