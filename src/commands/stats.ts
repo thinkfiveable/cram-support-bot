@@ -29,7 +29,7 @@ export default class Stats extends Command {
 				.addField(
 					'❯ Memory Usage',
 					`${Math.round(process.memoryUsage().heapUsed / 1024 / 1024)}MB`,
-					true
+					false
 				)
 				.addField(
 					'❯ General Stats',
@@ -38,7 +38,7 @@ export default class Stats extends Command {
                     • Channels: ${this.client.channels.cache.size}
 					• Tickets opened: ${await Thread.countDocuments()}
                 `,
-					true
+					false
 				)
 				.addField(
 					'❯ Source Code',

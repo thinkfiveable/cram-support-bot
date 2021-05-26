@@ -27,6 +27,7 @@ export default class ReadyListener extends Listener {
 
 	public async exec() {
 		// below code checks to make sure the specified guild, modmail category, and modmail main channel are valid.
+		if (!this.client.user) return;
 
 		this.client.info(`Bot logged in as ${this.client.user!.tag}`);
 		if (!this.client.guilds.cache.has(this.client.config.GUILD))
@@ -62,7 +63,7 @@ export default class ReadyListener extends Listener {
 	}
 
 	public changeStatus() {
-		return this.client.user!.setPresence({
+		return this.client.user?.setPresence({
 			activity: this.status[Math.floor(Math.random() * this.status.length)],
 			status: 'online'
 		});
