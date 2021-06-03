@@ -9,6 +9,7 @@ export interface AkClientOptions {
 	MODMAIL_CATEGORY: string;
 	GUILD: string;
 	MODMAIL_MAIN_CHANNEL: string;
+	ROLE_PING?: string;
 }
 
 declare module 'discord-akairo' {

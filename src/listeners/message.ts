@@ -5,10 +5,20 @@ import { stripIndents } from 'common-tags';
 import * as EmailValidator from 'email-validator';
 import { extractMessageAttachmentsIntoArray } from '../util';
 import Guild from '../schemas/Guild';
+import { MessageReaction } from 'discord.js';
+
+/*
+- Reaction rating after ticket gets closed (non-silent only)
+- More complex pathways/prompting for questions related to ticket creation.
+- Try to use more reaction emojis for Y/N questions
+- Confirmation before sending in 
+ */
 
 export default class MessageListener extends Listener {
 	// store if people are in the middle of the questionaire already
 	public sessions = new Set<string>();
+	public static THUMBS_UP = '👍';
+	public static THUMBS_DOWN = '👎';
 
 	public constructor() {
 		super('message', {
@@ -98,12 +108,10 @@ export default class MessageListener extends Listener {
 			await m.channel.send(
 				'Hello! Welcome to the Fiveable Cram Support bot! Please be sure to answer the following questions below in a timely fashion.'
 			);
-			// order ID indication
-			const PROMPT_ORDER_INDICATION = await this.promptString(m, 'Do you have an order ID? (y/n)');
 
 			let PROMPT_ORDER_ID: string | undefined;
 
-			if (/^y(?:e(?:a|s)?)?$/i.test(PROMPT_ORDER_INDICATION ?? '')) {
+			if (await this.promptYNReaction(m, 'Do you have an order ID?')) {
 				// get order ID
 				PROMPT_ORDER_ID = await this.promptQuestion(m, 'order ID');
 			}
@@ -115,8 +123,7 @@ export default class MessageListener extends Listener {
 			// get email
 			const PROMPT_EMAIL = await this.promptQuestion(m, 'email');
 			// check that email is valid
-			if (!EmailValidator.validate(PROMPT_EMAIL))
-				return this.reject(m, 'Not a valid email! Cancelling ticket...');
+			if (!EmailValidator.validate(PROMPT_EMAIL)) return this.reject(m, 'Not a valid email!');
 
 			// get zip code
 			const PROMPT_ZIP_CODE = await this.promptQuestion(
@@ -126,13 +133,21 @@ export default class MessageListener extends Listener {
 			);
 			// validate zip code
 			if (!/^\d{5}(?:[-\s]\d{4})?$/.test(PROMPT_ZIP_CODE))
-				return this.reject(m, 'Not a valid zip code! Cancelling ticket...');
+				return this.reject(m, 'Not a valid zip code!');
 
 			// get what their issue is
 			let PROMPT_ISSUE: string = await this.promptString(m, "What's the issue you are facing?");
-			if (PROMPT_ISSUE.length > 1200) return this.reject(m, 'Too long! Cancelling ticket...');
+			if (PROMPT_ISSUE.length > 1200) return this.reject(m, 'Too long!');
 			// escape any kind of styling they might have tried to apply
 			PROMPT_ISSUE = Util.escapeMarkdown(PROMPT_ISSUE);
+
+			if (
+				!(await this.promptYNReaction(
+					m,
+					'You are about to send this information to the Student Success team. Is this information correct?'
+				))
+			)
+				return this.reject(m, null);
 
 			this.client.info(`[Thread] data received from ${m.author.tag} (${m.author.id})`);
 
@@ -167,6 +182,7 @@ export default class MessageListener extends Listener {
 			this.client.info(`[Thread] Support Channel created for ${m.author.tag} (${m.author.id})`);
 			// send initial message
 			await channel.send(
+				this.client.config.ROLE_PING ? `<@&${this.client.config.ROLE_PING}>` : '',
 				new MessageEmbed()
 					.setTitle('New Support Thread...')
 					.setColor('#36393E')
@@ -196,7 +212,14 @@ export default class MessageListener extends Listener {
 			// if there was an error, end the session to prevent hanging
 			this.sessions.delete(m.author.id);
 			void m.channel.send(
-				new MessageEmbed().setTitle('Error!').setDescription(e.toString()).setTimestamp()
+				new MessageEmbed()
+					.setTitle('Error!')
+					.setDescription(
+						`${
+							e.message ? `${e.message} ` : ''
+						}Ticket has been cancelled. If you still need assisstance, feel free to send another message to restart the ticketing process.`
+					)
+					.setTimestamp()
 			);
 			return console.log(e);
 		}
@@ -205,21 +228,41 @@ export default class MessageListener extends Listener {
 	public async promptQuestion(m: Message, item: string, description?: string): Promise<string> {
 		const input = await this.promptString(m, `What is your ${item}?`, description);
 		// input will only be blank if a person does not answer in time
-		if (!input)
-			throw new Error(
-				'You ran out of time to answer this question! Cancelling ticket creation... Feel free to open another ticket by sending a message here...'
-			);
+		if (!input) throw new Error('You ran out of time to answer this question!');
 		// if input is too long
-		if (input.length > 75) this.reject(m, 'Too long! Cancelling ticket...');
+		if (input.length > 75) this.reject(m, 'Too long!');
 		// if someone says cancel at all, stop creation.
 		if (input.toLowerCase() === 'cancel') throw new Error('Cancelled.');
 
 		return input;
 	}
 
-	public reject(msg: Message, content: string) {
+	public reject(msg: Message, content: string | null) {
 		this.sessions.delete(msg.author.id);
-		throw new Error(content);
+		throw new Error(content ?? undefined);
+	}
+
+	private async promptYNReaction(m: Message, question: string, description?: string) {
+		const sentMessage = await m.channel.send(
+			new PromptEmbed(m.client).setTitle(question).setDescription(description ?? '')
+		);
+
+		await sentMessage.react(MessageListener.THUMBS_UP);
+		await sentMessage.react(MessageListener.THUMBS_DOWN);
+
+		const reaction = await sentMessage.awaitReactions(
+			(reaction: MessageReaction, user: User) =>
+				[MessageListener.THUMBS_DOWN, MessageListener.THUMBS_UP].includes(reaction.emoji.name) &&
+				user.id === m.author.id,
+			{
+				max: 1,
+				time: 30000
+			}
+		);
+
+		if (!reaction.size) this.reject(m, 'You did not react in time!');
+
+		return reaction.first()?.emoji.name === MessageListener.THUMBS_UP;
 	}
 
 	private async promptString(m: Message, title: string, description?: string) {
