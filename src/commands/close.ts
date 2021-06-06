@@ -56,7 +56,18 @@ export default class Close extends Command {
 
 		if (!silent)
 			await opener
-				.send(`\`Your recent support ticket (${ticket._id}) has been closed.\``)
+				.send(
+					new MessageEmbed()
+						.setColor('YELLOW')
+						.setTitle('Cram/Account Support Ticket Closed')
+						.setDescription(
+							stripIndents`
+							Ticket ID: \`${ticket._id}\`
+							
+							Your Cram/Account Support Ticket is now closed! Feel free to send us another message if you have any additional questions about your account, and we'll get back to you as soon as we can.
+							`
+						)
+				)
 				.catch(() => void 0);
 
 		if (msg.channel.id !== thread.id) void msg.channel.send('Ticket has been closed.');

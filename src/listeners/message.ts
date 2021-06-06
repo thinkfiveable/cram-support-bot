@@ -144,7 +144,15 @@ export default class MessageListener extends Listener {
 			if (
 				!(await this.promptYNReaction(
 					m,
-					'You are about to send this information to the Student Success team. Is this information correct?'
+					'You are about to send this information to the Student Success team. Is this information correct?',
+					stripIndents`
+						**First Name:** \`${PROMPT_FIRST_NAME}\`
+						**Last Name:** \`${PROMPT_LAST_NAME}\`
+						**Order ID:** \`${PROMPT_ORDER_ID ?? 'n/a'}\`
+						**Email:** \`${PROMPT_EMAIL}\`
+						**Zip Code:** \`${PROMPT_ZIP_CODE}\`
+						**Issue:** \`${PROMPT_ISSUE}\`
+					`
 				))
 			)
 				return this.reject(m, null);
@@ -206,7 +214,12 @@ export default class MessageListener extends Listener {
 			// end this session
 			this.sessions.delete(m.author.id);
 			return m.channel.send(
-				"`Your ticket has been sent in! A Student Success team member will be with you shortly! If you have any more messages to say, just say them below and they'll be relayed to our team!`"
+				new MessageEmbed()
+					.setColor('GREEN')
+					.setTitle('Ticket Successfully Received!')
+					.setDescription(
+						'A Student Success team member will be with you shortly.\nIf you have any more question, all additional messages you send will be relayed to our team!'
+					)
 			);
 		} catch (e) {
 			// if there was an error, end the session to prevent hanging
