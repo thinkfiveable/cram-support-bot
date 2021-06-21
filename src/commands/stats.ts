@@ -15,7 +15,8 @@ export default class Stats extends Command {
 				content: 'Get statistics about this running instance.',
 				usage: [''],
 				example: ['']
-			}
+			},
+			userPermissions: ['KICK_MEMBERS']
 		});
 	}
 

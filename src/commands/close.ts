@@ -27,7 +27,8 @@ export default class Close extends Command {
 				content: 'Close a ticket.',
 				usage: ['[#channel]'],
 				example: ['', '#ticket-channel']
-			}
+			},
+			userPermissions: ['KICK_MEMBERS']
 		});
 	}
 

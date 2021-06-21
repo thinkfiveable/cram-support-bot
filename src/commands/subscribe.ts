@@ -20,7 +20,8 @@ export default class Subscribe extends Command {
 				content: 'Subscribe yourself to a ticket.',
 				usage: ['[user]'],
 				example: ['@nico']
-			}
+			},
+			userPermissions: ['KICK_MEMBERS']
 		});
 	}
 

@@ -22,7 +22,8 @@ export default class Fetch extends Command {
 				content: 'Fetch info and messages belonging to a ticket.',
 				usage: ['<id>'],
 				example: ['3297382hhfweq89w']
-			}
+			},
+			userPermissions: ['KICK_MEMBERS']
 		});
 	}
 

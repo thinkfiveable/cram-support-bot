@@ -21,7 +21,8 @@ export default class ReOpen extends Command {
 				content: 'Reopen a ticket.',
 				usage: ['<id>'],
 				example: ['', '<absd823749>']
-			}
+			},
+			userPermissions: ['KICK_MEMBERS']
 		});
 	}
 

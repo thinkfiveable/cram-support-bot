@@ -21,7 +21,8 @@ export default class Reply extends Command {
 				content: 'Reply to a ticket in a ticket channel. If it is closed, replying will reopen it.',
 				usage: ['<content>'],
 				example: ["Hi, I'm here to help you!"]
-			}
+			},
+			userPermissions: ['KICK_MEMBERS']
 		});
 	}
 
